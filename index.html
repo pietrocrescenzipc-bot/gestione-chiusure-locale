@@ -46,6 +46,10 @@
                     <i class="fa-solid fa-chart-line w-5 text-purple-400"></i>
                     <span>Analisi Mensile</span>
                 </button>
+                <button onclick="switchTab('operatori')" id="nav-operatori" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-user-tie w-5 text-amber-400"></i>
+                    <span>Report per Operatore</span>
+                </button>
                 <button onclick="switchTab('ai')" id="nav-ai" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
                     <i class="fa-solid fa-robot w-5 text-pink-400"></i>
                     <span>Assistente AI</span>
@@ -75,6 +79,7 @@
                 <button onclick="switchTab('dashboard')" class="p-2 bg-slate-800 rounded-lg text-amber-400"><i class="fa-solid fa-chart-pie"></i></button>
                 <button onclick="switchTab('nuova')" class="p-2 bg-slate-800 rounded-lg text-emerald-400"><i class="fa-solid fa-circle-plus"></i></button>
                 <button onclick="switchTab('storico')" class="p-2 bg-slate-800 rounded-lg text-blue-400"><i class="fa-solid fa-calendar-days"></i></button>
+                <button onclick="switchTab('operatori')" class="p-2 bg-slate-800 rounded-lg text-amber-400"><i class="fa-solid fa-user-tie"></i></button>
                 <button onclick="switchTab('ai')" class="p-2 bg-slate-800 rounded-lg text-pink-400"><i class="fa-solid fa-robot"></i></button>
             </div>
         </header>
@@ -175,7 +180,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Chi ha effettuato la chiusura?</label>
-                            <input type="text" id="chiusura-operatore" placeholder="Es. Mario / Antonio / Pietro" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <select id="chiusura-operatore" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                                <option value="Antonio Crescenzi">Antonio Crescenzi</option>
+                                <option value="Pietro Crescenzi">Pietro Crescenzi</option>
+                                <option value="Alessia Palombi">Alessia Palombi</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Coperti</label>
@@ -217,7 +226,6 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa a Fine Serata (€) <span class="text-xs text-amber-400 font-normal">(Target standard: 300.00€)</span></label>
                             <input type="number" step="0.01" id="chiusura-fondo-cassa" value="300.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
-                            <span class="text-xs text-slate-500 mt-1 block">Eventuali differenze dai 300€ calcoleranno l'ammanco/avanzo di cassa da riportare alla prossima chiusura.</span>
                         </div>
                     </div>
 
@@ -304,34 +312,61 @@
                 </div>
             </section>
 
-            <!-- TAB 4: ANALISI MENSILE -->
+            <!-- TAB 4: ANALISI MENSILE & FILTRO TEMPORALE -->
             <section id="tab-analisi" class="hidden space-y-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-white">Analisi Mensile & Totali</h2>
-                    <p class="text-sm text-slate-400">Riepilogo aggregato del personale, spese e differenze di cassa.</p>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Analisi Periodo & Totali</h2>
+                        <p class="text-sm text-slate-400">Filtra per periodo e visualizza il riepilogo aggregato.</p>
+                    </div>
+                    <!-- Selettore Lasso di Tempo -->
+                    <div class="flex flex-wrap items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-2xl">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Periodo:</span>
+                        <select id="filtro-periodo" onchange="changeFiltroPeriodo()" class="bg-slate-900 border border-slate-800 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-500">
+                            <option value="30">Ultimi 30 Giorni</option>
+                            <option value="mese_corrente" selected>Mese Corrente</option>
+                            <option value="90">Ultimi 3 Mesi</option>
+                            <option value="anno">Anno Corrente</option>
+                            <option value="personalizzato">Personalizzato</option>
+                        </select>
+                        <div id="box-date-custom" class="hidden flex items-center space-x-2">
+                            <input type="date" id="data-inizio" onchange="updateAnalisi()" class="bg-slate-900 border border-slate-800 text-xs text-white rounded-xl px-2 py-2">
+                            <span class="text-xs text-slate-400">a</span>
+                            <input type="date" id="data-fine" onchange="updateAnalisi()" class="bg-slate-900 border border-slate-800 text-xs text-white rounded-xl px-2 py-2">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
-                        <p class="text-xs text-slate-400 font-medium">Totale Spesa Personale (Mese)</p>
-                        <h3 id="mensile-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
-                        <span id="mensile-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore totali</span>
+                <!-- KPI Cards Analisi -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Incassi Reali (Periodo)</p>
+                        <h3 id="analisi-incassi" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-serate-count" class="text-xs text-slate-500 block mt-1">0 serate registrate</span>
                     </div>
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
-                        <p class="text-xs text-slate-400 font-medium">Differenza Reale vs Gestionale (Mese)</p>
-                        <h3 id="mensile-diff-cassa" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Spesa Totale Personale</p>
+                        <h3 id="analisi-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore totali</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Asporto (Periodo)</p>
+                        <h3 id="analisi-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-asporto-ordini" class="text-xs text-slate-500 block mt-1">0 ordini totali</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Differenza Cassa (Reale - Gestionale)</p>
+                        <h3 id="analisi-diff-cassa" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
                         <span class="text-xs text-slate-500 block mt-1">Somma scostamenti</span>
-                    </div>
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
-                        <p class="text-xs text-slate-400 font-medium">Totale Incassi Reali (Mese)</p>
-                        <h3 id="mensile-incassi" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
-                        <span class="text-xs text-slate-500 block mt-1">Fatturato complessivo</span>
                     </div>
                 </div>
 
                 <!-- Dettaglio Ore per Settore -->
-                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl">
-                    <h3 class="font-bold text-white text-lg mb-4">Ripartizione Ore per Settore & Personale</h3>
+                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl">
+                    <h3 class="font-bold text-white text-lg mb-4 flex items-center space-x-2">
+                        <i class="fa-solid fa-clock text-purple-400"></i>
+                        <span>Ripartizione Ore per Settore & Personale nel Periodo</span>
+                    </h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
                             <span class="text-xs text-slate-400">Cucina</span>
@@ -353,14 +388,87 @@
                 </div>
             </section>
 
-            <!-- TAB 5: ASSISTENTE AI -->
+            <!-- TAB 5: REPORT PER OPERATORE -->
+            <section id="tab-operatori" class="hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Report per Operatore</h2>
+                        <p class="text-sm text-slate-400">Analizza le performance, i coperti, le ore e gli ammanchi suddivisi per responsabile.</p>
+                    </div>
+                    <!-- Selettore Operatore -->
+                    <div class="flex items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-2xl">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Seleziona Operatore:</span>
+                        <select id="seleziona-operatore" onchange="updateReportOperatore()" class="bg-slate-900 border border-slate-800 text-amber-400 font-semibold text-sm rounded-xl px-4 py-2 focus:outline-none focus:border-amber-500">
+                            <option value="Antonio Crescenzi">Antonio Crescenzi</option>
+                            <option value="Pietro Crescenzi">Pietro Crescenzi</option>
+                            <option value="Alessia Palombi">Alessia Palombi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Operatore -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Incassi Gestiti</p>
+                        <h3 id="op-incassi" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
+                        <span id="op-serate-count" class="text-xs text-slate-500 block mt-1">0 serate chiuse</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Coperti Totali / Medi</p>
+                        <h3 id="op-coperti" class="text-2xl font-bold text-emerald-400 mt-2">0</h3>
+                        <span id="op-coperto-medio" class="text-xs text-slate-500 block mt-1">Media: € 0,00 a coperto</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Asporto Gestito</p>
+                        <h3 id="op-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
+                        <span id="op-asporto-ordini" class="text-xs text-slate-500 block mt-1">0 ordini totali</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Costo Personale (Ore)</p>
+                        <h3 id="op-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
+                        <span id="op-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore registrate</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Ammanco Cassa</p>
+                        <h3 id="op-ammanco" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
+                        <span id="op-ammanco-sub" class="text-xs text-slate-500 block mt-1">Scostamenti fondo cassa</span>
+                    </div>
+                </div>
+
+                <!-- Tabella Dettaglio Chiusure Operatore -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <div class="p-4 border-b border-slate-800 bg-slate-900">
+                        <h3 class="font-bold text-white text-sm">Storico Serate Chiuse dall'Operatore Selezionato</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-900/50 border-b border-slate-800 text-slate-400">
+                                    <th class="p-4">Data</th>
+                                    <th class="p-4">Inc. Reale</th>
+                                    <th class="p-4">Asporto</th>
+                                    <th class="p-4">Coperti</th>
+                                    <th class="p-4">Cop. Medio</th>
+                                    <th class="p-4">Fondo Cassa</th>
+                                    <th class="p-4">Ammanco Cassa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="operatore-table-body" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: ASSISTENTE AI -->
             <section id="tab-ai" class="hidden space-y-6">
                 <div class="border-b border-slate-800 pb-4">
                     <h2 class="text-2xl font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-robot text-pink-400"></i>
                         <span>Assistente AI & Business Advisor</span>
                     </h2>
-                    <p class="text-sm text-slate-400">Fai domande sui dati inseriti, analizza l'andamento del locale e chiedi consigli per migliorare i margini.</p>
+                    <p class="text-sm text-slate-400">Fai domande sui dati inseriti, analizza l'andamento del locale e chiedi consigli sui margini.</p>
                 </div>
 
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col h-[650px] shadow-2xl">
@@ -371,11 +479,12 @@
                                 <i class="fa-solid fa-robot"></i>
                             </div>
                             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow">
-                                <p class="font-semibold text-white mb-1">Ciao! Sono il tuo assistente di gestione pizzeria.</p>
-                                <p>Ora monitoro anche il **Fondo Cassa** (target 300€) e calcolo automaticamente l'eventuale **ammanco o avanzo di cassa**, correggendo l'incasso reale con precisione millimetrica. Chiedimi pure qualsiasi informazione!</p>
+                                <p class="font-semibold text-white mb-1">Ciao! Sono il tuo assistente AI di gestione pizzeria.</p>
+                                <p>Leggo direttamente il tuo archivio locale. Puoi chiedermi informazioni su incassi, operatori (Antonio, Pietro, Alessia), coperti e ammanchi di cassa!</p>
                                 <div class="mt-3 flex flex-wrap gap-2">
-                                    <button onclick="askPreset('Come sono andate le ultime serate in termini di fondo cassa e ammanchi?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">💰 Analisi fondo cassa</button>
-                                    <button onclick="askPreset('Qual è il nostro punto di pareggio considerando che non abbiamo affitto?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-purple-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">🎯 Analisi punto di pareggio</button>
+                                    <button onclick="askPreset('Come sono andate le serate gestite da Antonio Crescenzi?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📊 Report Antonio</button>
+                                    <button onclick="askPreset('Qual è il totale degli incassi gestiti da Pietro Crescenzi?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📊 Report Pietro</button>
+                                    <button onclick="askPreset('Dammi un riepilogo generale di tutte le serate')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📈 Riepilogo Generale</button>
                                 </div>
                             </div>
                         </div>
@@ -383,7 +492,7 @@
 
                     <!-- Input Bar -->
                     <div class="mt-4 pt-4 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="ai-user-input" placeholder="Scrivi una domanda sui dati della pizzeria..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-pink-500 text-sm">
+                        <input type="text" id="ai-user-input" onkeypress="handleKeyPress(event)" placeholder="Scrivi una domanda sui dati della pizzeria (es. 'Come è andata Alessia?')..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-pink-500 text-sm">
                         <button onclick="sendAIPrompt()" class="bg-pink-600 hover:bg-pink-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-pink-600/20 transition flex items-center space-x-2">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>Invia</span>
@@ -405,11 +514,12 @@
             updateDashboard();
             renderStorico();
             updateAnalisi();
+            updateReportOperatore();
             initChart();
         });
 
         function switchTab(tabId) {
-            ['dashboard', 'nuova', 'storico', 'analisi', 'ai'].forEach(id => {
+            ['dashboard', 'nuova', 'storico', 'analisi', 'operatori', 'ai'].forEach(id => {
                 document.getElementById(`tab-${id}`).classList.add('hidden');
                 const navBtn = document.getElementById(`nav-${id}`);
                 if(navBtn) {
@@ -425,12 +535,15 @@
                 updateDashboard();
                 updateAnalisi();
             }
+            if(tabId === 'operatori') {
+                updateReportOperatore();
+            }
         }
 
         function saveClosing(e) {
             e.preventDefault();
             const fondoCassaInserito = parseFloat(document.getElementById('chiusura-fondo-cassa').value) || 300;
-            const ammancoCassa = 300 - fondoCassaInserito; // Se metti 295, l'ammanco è +5€ (mancano 5 euro in cassa)
+            const ammancoCassa = 300 - fondoCassaInserito;
 
             const data = {
                 id: Date.now(),
@@ -465,6 +578,7 @@
             updateDashboard();
             renderStorico();
             updateAnalisi();
+            updateReportOperatore();
         }
 
         function updateDashboard() {
@@ -496,11 +610,6 @@
                 ammEl.innerText = `Fondo cassa perfetto (300€)`;
                 ammEl.className = "text-xs text-slate-500 block mt-1";
             }
-
-            const diff = ultima.reale - ultima.gestionale;
-            const diffEl = document.getElementById('dash-diff-gestionale');
-            diffEl.innerText = `€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}`;
-            diffEl.className = `text-2xl font-bold mt-2 ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
             const totOre = ultima.oreCucina + ultima.oreSala + ultima.oreAntonio + ultima.orePietro;
             const costoPers = totOre * 18;
@@ -559,16 +668,59 @@
             });
         }
 
+        function changeFiltroPeriodo() {
+            const val = document.getElementById('filtro-periodo').value;
+            const customBox = document.getElementById('box-date-custom');
+            if(val === 'personalizzato') {
+                customBox.classList.remove('hidden');
+            } else {
+                customBox.classList.add('hidden');
+            }
+            updateAnalisi();
+        }
+
         function updateAnalisi() {
-            let totOre = 0, totPers = 0, totDiff = 0, totInc = 0;
+            const filtro = document.getElementById('filtro-periodo').value;
+            const oggi = new Date();
+            let chiusureFiltrate = [...chiusure];
+
+            if(filtro !== 'personalizzato') {
+                chiusureFiltrate = chiusure.filter(c => {
+                    const dataC = new Date(c.data);
+                    if(filtro === '30') {
+                        const t30 = new Date();
+                        t30.setDate(oggi.getDate() - 30);
+                        return dataC >= t30 && dataC <= oggi;
+                    } else if(filtro === 'mese_corrente') {
+                        return dataC.getMonth() === oggi.getMonth() && dataC.getFullYear() === oggi.getFullYear();
+                    } else if(filtro === '90') {
+                        const t90 = new Date();
+                        t90.setDate(oggi.getDate() - 90);
+                        return dataC >= t90 && dataC <= oggi;
+                    } else if(filtro === 'anno') {
+                        return dataC.getFullYear() === oggi.getFullYear();
+                    }
+                    return true;
+                });
+            } else {
+                const dInizio = document.getElementById('data-inizio').value;
+                const dFine = document.getElementById('data-fine').value;
+                if(dInizio && dFine) {
+                    chiusureFiltrate = chiusure.filter(c => c.data >= dInizio && c.data <= dFine);
+                }
+            }
+
+            let totOre = 0, totPers = 0, totDiff = 0, totInc = 0, totAsp = 0, totAspOrd = 0;
             let cCucina = 0, cSala = 0, cAntonio = 0, cPietro = 0;
 
-            chiusure.forEach(c => {
+            chiusureFiltrate.forEach(c => {
                 const oreSerata = c.oreCucina + c.oreSala + c.oreAntonio + c.orePietro;
                 totOre += oreSerata;
                 totPers += oreSerata * 18;
                 totDiff += (c.reale - c.gestionale);
                 totInc += c.reale;
+                totAsp += c.asporto;
+                totAspOrd += c.asportoOrdini;
 
                 cCucina += c.oreCucina;
                 cSala += c.oreSala;
@@ -576,19 +728,85 @@
                 cPietro += c.orePietro;
             });
 
-            document.getElementById('mensile-personale').innerText = `€ ${totPers.toFixed(2)}`;
-            document.getElementById('mensile-ore-totali').innerText = `${totOre} ore totali registrate`;
+            document.getElementById('analisi-incassi').innerText = `€ ${totInc.toFixed(2)}`;
+            document.getElementById('analisi-serate-count').innerText = `${chiusureFiltrate.length} serate nel periodo`;
+
+            document.getElementById('analisi-personale').innerText = `€ ${totPers.toFixed(2)}`;
+            document.getElementById('analisi-ore-totali').innerText = `${totOre} ore totali registrate`;
+
+            document.getElementById('analisi-asporto').innerText = `€ ${totAsp.toFixed(2)}`;
+            document.getElementById('analisi-asporto-ordini').innerText = `${totAspOrd} ordini totali`;
             
-            const diffEl = document.getElementById('mensile-diff-cassa');
+            const diffEl = document.getElementById('analisi-diff-cassa');
             diffEl.innerText = `€ ${totDiff >= 0 ? '+' : ''}${totDiff.toFixed(2)}`;
             diffEl.className = `text-2xl font-bold mt-2 ${totDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
-
-            document.getElementById('mensile-incassi').innerText = `€ ${totInc.toFixed(2)}`;
 
             document.getElementById('settore-cucina').innerText = `${cCucina} h`;
             document.getElementById('settore-sala').innerText = `${cSala} h`;
             document.getElementById('settore-antonio').innerText = `${cAntonio} h`;
             document.getElementById('settore-pietro').innerText = `${cPietro} h`;
+        }
+
+        function updateReportOperatore() {
+            const opSelezionato = document.getElementById('seleziona-operatore').value;
+            const chiusureOp = chiusure.filter(c => c.operatore === opSelezionato);
+
+            let totInc = 0, totCop = 0, totAsp = 0, totAspOrd = 0, totOre = 0, totAmmanco = 0;
+
+            chiusureOp.forEach(c => {
+                totInc += c.reale;
+                totCop += c.coperti;
+                totAsp += c.asporto;
+                totAspOrd += c.asportoOrdini;
+                totOre += (c.oreCucina + c.oreSala + c.oreAntonio + c.orePietro);
+                totAmmanco += c.ammancoCassa;
+            });
+
+            const copMedioOp = totCop > 0 ? (totInc - totAsp) / totCop : 0;
+            const costoPersOp = totOre * 18;
+
+            document.getElementById('op-incassi').innerText = `€ ${totInc.toFixed(2)}`;
+            document.getElementById('op-serate-count').innerText = `${chiusureOp.length} serate chiuse`;
+
+            document.getElementById('op-coperti').innerText = `${totCop}`;
+            document.getElementById('op-coperto-medio').innerText = `Media: € ${copMedioOp.toFixed(2)} a coperto`;
+
+            document.getElementById('op-asporto').innerText = `€ ${totAsp.toFixed(2)}`;
+            document.getElementById('op-asporto-ordini').innerText = `${totAspOrd} ordini totali`;
+
+            document.getElementById('op-personale').innerText = `€ ${costoPersOp.toFixed(2)}`;
+            document.getElementById('op-ore-totali').innerText = `${totOre} ore totali registrate`;
+
+            const ammEl = document.getElementById('op-ammanco');
+            ammEl.innerText = `€ ${totAmmanco.toFixed(2)}`;
+            ammEl.className = `text-2xl font-bold mt-2 ${totAmmanco > 0 ? 'text-rose-400' : (totAmmanco < 0 ? 'text-emerald-400' : 'text-white')}`;
+            document.getElementById('op-ammanco-sub').innerText = totAmmanco > 0 ? 'Totale ammanchi di cassa' : (totAmmanco < 0 ? 'Totale avanzi di cassa' : 'Cassa perfettamente in quadrato');
+
+            // Popola tabella operatore
+            const tbody = document.getElementById('operatore-table-body');
+            tbody.innerHTML = '';
+            if(chiusureOp.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Nessuna chiusura registrata per ${opSelezionato}.</td></tr>`;
+                return;
+            }
+
+            chiusureOp.forEach(c => {
+                const copMedioSerata = c.coperti > 0 ? (c.reale - c.asporto) / c.coperti : 0;
+                const ammText = c.ammancoCassa !== 0 ? (c.ammancoCassa > 0 ? `-€ ${c.ammancoCassa.toFixed(2)}` : `+€ ${Math.abs(c.ammancoCassa).toFixed(2)}`) : '€ 0,00';
+                const ammClass = c.ammancoCassa > 0 ? 'text-rose-400' : (c.ammancoCassa < 0 ? 'text-emerald-400' : 'text-slate-400');
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-900/60 transition">
+                        <td class="p-4 font-medium text-white">${c.data}</td>
+                        <td class="p-4 font-bold text-amber-400">€ ${c.reale.toFixed(2)}</td>
+                        <td class="p-4 text-blue-400">€ ${c.asporto.toFixed(2)}</td>
+                        <td class="p-4 text-slate-300">${c.coperti}</td>
+                        <td class="p-4 text-emerald-400">€ ${copMedioSerata.toFixed(2)}</td>
+                        <td class="p-4 text-slate-300">€ ${c.fondoCassa.toFixed(2)}</td>
+                        <td class="p-4 font-semibold ${ammClass}">${ammText}</td>
+                    </tr>
+                `;
+            });
         }
 
         function initChart() {
@@ -645,6 +863,7 @@
                 updateDashboard();
                 renderStorico();
                 updateAnalisi();
+                updateReportOperatore();
             }
         }
 
@@ -655,6 +874,7 @@
                 updateDashboard();
                 renderStorico();
                 updateAnalisi();
+                updateReportOperatore();
             }
         }
 
@@ -679,6 +899,13 @@
             sendAIPrompt();
         }
 
+        function handleKeyPress(e) {
+            if(e.key === 'Enter') {
+                sendAIPrompt();
+            }
+        }
+
+        // INTEGRAZIONE AI DINAMICA CON I DATI REALI
         function sendAIPrompt() {
             const input = document.getElementById('ai-user-input');
             const query = input.value.trim();
@@ -686,6 +913,7 @@
 
             const chatBox = document.getElementById('ai-chat-box');
             
+            // Mostra il messaggio dell'utente
             chatBox.innerHTML += `
                 <div class="flex items-start justify-end space-x-3">
                     <div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl text-sm max-w-2xl text-slate-100 shadow">
@@ -694,22 +922,55 @@
                 </div>
             `;
             input.value = '';
-            chatBox.scrollTop = chartBox = chatBox.scrollHeight;
+            chatBox.scrollTop = chatBox.scrollHeight;
 
+            // Elaborazione intelligente basata sui dati salvati
             setTimeout(() => {
-                let risposta = "Ho analizzato i tuoi dati registrati.";
+                let risposta = "";
                 const qLower = query.toLowerCase();
 
-                if(qLower.includes('fondo') || qLower.includes('ammanco') || qLower.includes('cassa')) {
-                    if(chiusure.length > 0) {
-                        const ult = chiusure[0];
-                        const ammText = ult.ammancoCassa > 0 ? `un ammanco di € ${ult.ammancoCassa.toFixed(2)}` : (ult.ammancoCassa < 0 ? `un avanzo di € ${Math.abs(ult.ammancoCassa).toFixed(2)}` : `nessun ammanco (perfettamente a 300€)`);
-                        risposta = `Nell'ultima serata in data **${ult.data}**, il fondo cassa rilevato è stato di **€ ${ult.fondoCassa.toFixed(2)}**, registrando ${ammText}.`;
+                if(chiusure.length === 0) {
+                    risposta = "Al momento non hai ancora registrato alcuna chiusura nel sistema. Inserisci almeno una serata nella sezione 'Inserisci Chiusura' per permettermi di analizzare i dati!";
+                } else if(qLower.includes('antonio') || qLower.includes('pietro') || qLower.includes('alessia')) {
+                    const nome = qLower.includes('antonio') ? 'Antonio Crescenzi' : (qLower.includes('pietro') ? 'Pietro Crescenzi' : 'Alessia Palombi');
+                    const opSerate = chiusure.filter(c => c.operatore.toLowerCase() === nome.toLowerCase());
+                    
+                    if(opSerate.length === 0) {
+                        risposta = `Non ho trovato serate registrate a nome di **${nome}**.`;
                     } else {
-                        risposta = "Non ci sono ancora chiusure registrate nello storico.";
+                        let inc = 0, cop = 0, asp = 0, amm = 0, ore = 0;
+                        opSerate.forEach(s => {
+                            inc += s.reale;
+                            cop += s.coperti;
+                            asp += s.asporto;
+                            amm += s.ammancoCassa;
+                            ore += (s.oreCucina + s.oreSala + s.oreAntonio + s.orePietro);
+                        });
+                        const copMedio = cop > 0 ? (inc - asp) / cop : 0;
+                        const costoPers = ore * 18;
+
+                        risposta = `📊 **Report per ${nome}**:<br>` +
+                                   `• **Serate chiuse**: ${opSerate.length}<br>` +
+                                   `• **Incassi reali totali**: € ${inc.toFixed(2)}<br>` +
+                                   `• **Coperti serviti**: ${cop} (Media: € ${copMedio.toFixed(2)} a coperto)<br>` +
+                                   `• **Asporto totale**: € ${asp.toFixed(2)}<br>` +
+                                   `• **Ore lavorate totali**: ${ore} h (Costo personale stimato: € ${costoPers.toFixed(2)})<br>` +
+                                   `• **Ammanco/Avanzo cassa**: € ${amm.toFixed(2)}`;
                     }
+                } else if(qLower.includes('riepilogo') || qLower.includes('generale') || qLower.includes('tutte le serate')) {
+                    let totInc = 0, totCop = 0, totSerate = chiusure.length, totAmm = 0;
+                    chiusure.forEach(s => {
+                        totInc += s.reale;
+                        totCop += s.coperti;
+                        totAmm += s.ammancoCassa;
+                    });
+                    risposta = `📈 **Riepilogo Generale Pizzeria**:<br>` +
+                               `• **Serate totali registrate**: ${totSerate}<br>` +
+                               `• **Incasso reale complessivo**: € ${totInc.toFixed(2)}<br>` +
+                               `• **Coperti totali serviti**: ${totCop}<br>` +
+                               `• **Totale ammanchi/avanzi cassa**: € ${totAmm.toFixed(2)}`;
                 } else {
-                    risposta = `Ricevuto! Il sistema monitora il fondo cassa rispetto al target di 300€ calcolando istantaneamente l'eventuale ammanco o avanzo.`;
+                    risposta = `Ho esaminato i tuoi dati. Attualmente hai registrato **${chiusure.length} serate** in archivio. Puoi chiedermi specifiche sui singoli operatori (**Antonio Crescenzi**, **Pietro Crescenzi**, **Alessia Palombi**) digitando il loro nome, oppure chiedendomi un riepilogo generale!`;
                 }
 
                 chatBox.innerHTML += `
@@ -717,13 +978,13 @@
                         <div class="bg-pink-500/20 text-pink-400 p-2.5 rounded-xl border border-pink-500/30">
                             <i class="fa-solid fa-robot"></i>
                         </div>
-                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow">
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow space-y-1">
                             <p>${risposta}</p>
                         </div>
                     </div>
                 `;
                 chatBox.scrollTop = chatBox.scrollHeight;
-            }, 600);
+            }, 500);
         }
     </script>
 </body>
