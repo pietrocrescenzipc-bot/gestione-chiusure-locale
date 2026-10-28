@@ -12,13 +12,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overflow-y: auto; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 flex h-screen overflow-hidden">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col md:flex-row">
 
     <!-- MENU LATERALE DESKTOP (Sempre visibile su schermi grandi) -->
-    <aside class="w-64 bg-slate-950 border-r border-slate-800 hidden md:flex flex-col justify-between shrink-0">
+    <aside class="w-64 bg-slate-950 border-r border-slate-800 hidden md:flex flex-col justify-between shrink-0 fixed h-screen z-40">
         <div>
             <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
                 <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold shadow-lg shadow-amber-500/20">
@@ -117,10 +117,10 @@
     </div>
 
     <!-- CONTENUTO PRINCIPALE -->
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <div class="flex-1 flex flex-col min-h-screen md:ml-64">
         
         <!-- HEADER MOBILE CON IL PULSANTE DELLE 3 LINEE -->
-        <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center shrink-0">
+        <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center sticky top-0 z-30">
             <div class="flex items-center space-x-3">
                 <button onclick="toggleMobileMenu()" class="text-amber-400 text-xl p-1 focus:outline-none">
                     <i class="fa-solid fa-bars"></i>
@@ -132,7 +132,7 @@
             </div>
         </header>
 
-        <main class="flex-1 p-4 sm:p-6 md:p-10 overflow-y-auto w-full max-w-7xl mx-auto space-y-6">
+        <main class="flex-1 p-4 sm:p-6 md:p-10 w-full max-w-7xl mx-auto space-y-6 pb-20">
 
             <!-- TAB 1: DASHBOARD -->
             <section id="tab-dashboard" class="space-y-6">
@@ -576,6 +576,11 @@
         </main>
     </div>
 
+    <!-- Indicatore visivo per il refresh a trascinamento (Pull-to-Refresh) -->
+    <div id="pull-refresh-indicator" class="fixed top-0 left-0 right-0 h-16 bg-amber-500 text-slate-950 font-bold flex items-center justify-center transition-all duration-300 -translate-y-full z-50 shadow-lg">
+        <i class="fa-solid fa-rotate animate-spin mr-2"></i> Ricaricamento in corso...
+    </div>
+
     <!-- Script Logica Applicativa -->
     <script>
         let chiusure = JSON.parse(localStorage.getItem('chiusure_pizzeria')) || [];
@@ -597,6 +602,7 @@
             updateAnalisi();
             updateReportOperatore();
             initChart();
+            initPullToRefresh();
 
             window.addEventListener('click', function(e) {
                 const dropdown = document.getElementById('dropdown-menu');
@@ -606,6 +612,43 @@
                 }
             });
         });
+
+        // Gestione Pull-to-Refresh da mobile tirando giù la pagina
+        function initPullToRefresh() {
+            let touchStartY = 0;
+            const indicator = document.getElementById('pull-refresh-indicator');
+
+            window.addEventListener('touchstart', e => {
+                if(window.scrollY === 0) {
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, {passive: true});
+
+            window.addEventListener('touchmove', e => {
+                if(window.scrollY === 0 && touchStartY > 0) {
+                    const touchY = e.touches[0].clientY;
+                    const diff = touchY - touchStartY;
+                    if(diff > 120) {
+                        indicator.style.transform = 'translateY(0)';
+                    }
+                }
+            }, {passive: true});
+
+            window.addEventListener('touchend', e => {
+                if(window.scrollY === 0 && touchStartY > 0) {
+                    const touchEndY = e.changedTouches[0].clientY;
+                    if(touchEndY - touchStartY > 120) {
+                        indicator.style.transform = 'translateY(0)';
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 600);
+                    } else {
+                        indicator.style.transform = 'translateY(-100%)';
+                    }
+                }
+                touchStartY = 0;
+            }, {passive: true});
+        }
 
         function toggleMobileMenu() {
             const drawer = document.getElementById('mobile-drawer');
@@ -627,13 +670,11 @@
             ['dashboard', 'nuova', 'storico', 'analisi', 'operatori', 'ai'].forEach(id => {
                 document.getElementById(`tab-${id}`).classList.add('hidden');
                 
-                // Desktop nav active state
                 const navBtn = document.getElementById(`nav-${id}`);
                 if(navBtn) {
                     navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
                 }
                 
-                // Drawer mobile nav active state
                 const drawerBtn = document.getElementById(`drawer-nav-${id}`);
                 if(drawerBtn) {
                     drawerBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
@@ -641,20 +682,18 @@
             });
 
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // Attiva desktop
             const activeNav = document.getElementById(`nav-${tabId}`);
             if(activeNav) {
                 activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
             }
 
-            // Attiva drawer mobile
             const activeDrawer = document.getElementById(`drawer-nav-${tabId}`);
             if(activeDrawer) {
                 activeDrawer.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
             }
 
-            // Aggiorna titolo header mobile
             document.getElementById('mobile-current-section').innerText = sectionNames[tabId];
 
             if(tabId === 'dashboard' || tabId === 'analisi') {
