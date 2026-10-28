@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Chiusure Locale</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js per i grafici -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 flex h-screen overflow-hidden">
+
+    <!-- MENU LATERALE (SIDEBAR) -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+        <div>
+            <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
+                <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-utensils text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight text-white">Gestione Locale</h1>
+                    <span class="text-xs text-amber-400 font-medium">Controllo & Chiusure</span>
+                </div>
+            </div>
+            <nav class="p-4 space-y-1.5">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('nuova')" id="nav-nuova" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-circle-plus w-5 text-emerald-400"></i>
+                    <span>Inserisci Chiusura</span>
+                </button>
+                <button onclick="switchTab('storico')" id="nav-storico" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-calendar-days w-5 text-blue-400"></i>
+                    <span>Storico Chiusure</span>
+                </button>
+                <button onclick="switchTab('analisi')" id="nav-analisi" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-chart-line w-5 text-purple-400"></i>
+                    <span>Analisi Mensile</span>
+                </button>
+                <button onclick="switchTab('ai')" id="nav-ai" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-robot w-5 text-pink-400"></i>
+                    <span>Assistente AI</span>
+                </button>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-800">
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
+                <p class="font-semibold text-slate-300">Costo Orario Dipendenti:</p>
+                <p class="text-amber-400 font-bold mt-0.5">€ 18,00 / ora (Tutto compreso)</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- CONTENUTO PRINCIPALE -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- Header Mobile / Topbar -->
+        <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="bg-amber-500 text-slate-950 p-2 rounded-lg font-bold">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <span class="font-bold text-white">Gestione Locale</span>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="switchTab('dashboard')" class="p-2 bg-slate-800 rounded-lg text-amber-400"><i class="fa-solid fa-chart-pie"></i></button>
+                <button onclick="switchTab('nuova')" class="p-2 bg-slate-800 rounded-lg text-emerald-400"><i class="fa-solid fa-circle-plus"></i></button>
+                <button onclick="switchTab('storico')" class="p-2 bg-slate-800 rounded-lg text-blue-400"><i class="fa-solid fa-calendar-days"></i></button>
+                <button onclick="switchTab('ai')" class="p-2 bg-slate-800 rounded-lg text-pink-400"><i class="fa-solid fa-robot"></i></button>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Dashboard Generale</h2>
+                        <p class="text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave.</p>
+                    </div>
+                    <button onclick="switchTab('nuova')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuova Chiusura Serata</span>
+                    </button>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Incasso Reale (Ultima Serata)</p>
+                        <h3 id="dash-incasso-reale" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
+                        <span id="dash-operatore" class="text-xs text-amber-400 font-medium block mt-1">Operatore: -</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Coperto Medio</p>
+                        <h3 id="dash-coperto-medio" class="text-2xl font-bold text-emerald-400 mt-2">€ 0,00</h3>
+                        <span class="text-xs text-slate-500 block mt-1">(Incassi - Asporto) / Coperti</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Differenza Gestionale / Reale</p>
+                        <h3 id="dash-diff-gestionale" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
+                        <span id="dash-diff-label" class="text-xs text-slate-500 block mt-1">Rispetto al gestionale</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Totale Ore Lavorate</p>
+                        <h3 id="dash-tot-ore" class="text-2xl font-bold text-purple-400 mt-2">0 h</h3>
+                        <span id="dash-costo-personale" class="text-xs text-slate-400 block mt-1">Costo stimato: € 0,00</span>
+                    </div>
+                </div>
+
+                <!-- Bussola di Profittabilità & Grafici -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Bussola / Tachimetro Profittabilità -->
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-white text-lg flex items-center space-x-2">
+                                <i class="fa-solid fa-compass text-amber-400"></i>
+                                <span>Bussola Profittabilità</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Conto della serva: (Ore Totali × 18) × 3 vs Incasso Reale</p>
+                        </div>
+                        <div class="my-6 text-center">
+                            <div id="gauge-container" class="relative w-48 h-24 mx-auto overflow-hidden">
+                                <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+                            </div>
+                            <h4 id="gauge-status" class="text-xl font-bold text-white mt-4">In attesa di dati</h4>
+                            <p id="gauge-desc" class="text-xs text-slate-400 mt-1">Inserisci la chiusura per valutare la serata.</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
+                            <span class="text-slate-400">Soglia Target Serata:</span>
+                            <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
+                        </div>
+                    </div>
+
+                    <!-- Grafico Andamento Recente -->
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
+                            <span class="text-xs text-slate-400">Ultime serate</span>
+                        </div>
+                        <div class="h-64 relative">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: NUOVA CHIUSURA -->
+            <section id="tab-nuova" class="hidden space-y-6">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-2xl font-bold text-white">Compilazione Chiusura Serata</h2>
+                    <p class="text-sm text-slate-400">Inserisci i dati esatti della chiusura di stasera.</p>
+                </div>
+
+                <form id="closingForm" onsubmit="saveClosing(event)" class="bg-slate-950 border border-slate-800 p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data Serata</label>
+                            <input type="date" id="chiusura-data" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Chi ha effettuato la chiusura?</label>
+                            <input type="text" id="chiusura-operatore" placeholder="Es. Mario / Antonio / Pietro" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Coperti</label>
+                            <input type="number" id="chiusura-coperti" placeholder="0" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Gestionale (€)</label>
+                            <input type="number" step="0.01" id="chiusura-incasso-gestionale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Reale (€)</label>
+                            <input type="number" step="0.01" id="chiusura-incasso-reale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Totale Bancomat (€)</label>
+                            <input type="number" step="0.01" id="chiusura-bancomat" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Non Scontrinato (€)</label>
+                            <input type="number" step="0.01" id="chiusura-non-scontrinato" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Totale Asporto (€)</label>
+                            <input type="number" step="0.01" id="chiusura-asporto" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Soldi in Cassa (€)</label>
+                            <input type="number" step="0.01" id="chiusura-soldi-cassa" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- Ore del Personale -->
+                    <div class="pt-4 border-t border-slate-800">
+                        <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Ore Personale per Settore</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Cucina</label>
+                                <input type="number" step="0.5" id="ore-cucina" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Sala</label>
+                                <input type="number" step="0.5" id="ore-sala" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Antonio</label>
+                                <input type="number" step="0.5" id="ore-antonio" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Pietro</label>
+                                <input type="number" step="0.5" id="ore-pietro" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spese Varie -->
+                    <div class="pt-4 border-t border-slate-800">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Spese Varie / Prelievi cassa (€)</label>
+                        <input type="text" id="chiusura-spese-desc" placeholder="Descrizione spese (es. Spesa €25, Pane €10)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 mb-2">
+                        <input type="number" step="0.01" id="chiusura-spese-importo" placeholder="Importo totale spese (€)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                    </div>
+
+                    <div class="flex justify-end pt-4">
+                        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-8 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Salva Chiusura Serata</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- TAB 3: STORICO CHIUSURE -->
+            <section id="tab-storico" class="hidden space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Storico Chiusure</h2>
+                        <p class="text-sm text-slate-400">Tutti i dati registrati delle serate passate.</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="exportCSV()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-xl transition flex items-center space-x-2 text-sm">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <span>Esporta CSV</span>
+                        </button>
+                        <button onclick="resetData()" class="bg-rose-950 text-rose-400 hover:bg-rose-900 font-medium px-4 py-2 rounded-xl transition flex items-center space-x-2 text-sm">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>Reset Dati</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-900 border-b border-slate-800 text-slate-400">
+                                    <th class="p-4">Data</th>
+                                    <th class="p-4">Operatore</th>
+                                    <th class="p-4">Inc. Reale</th>
+                                    <th class="p-4">Gestionale</th>
+                                    <th class="p-4">Diff.</th>
+                                    <th class="p-4">Coperti</th>
+                                    <th class="p-4">Coperto Medio</th>
+                                    <th class="p-4">Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storico-table-body" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: ANALISI MENSILE -->
+            <section id="tab-analisi" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Analisi Mensile & Totali</h2>
+                    <p class="text-sm text-slate-400">Riepilogo aggregato del personale, spese e differenze di cassa.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium">Totale Spesa Personale (Mese)</p>
+                        <h3 id="mensile-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
+                        <span id="mensile-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore totali</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium">Differenza Reale vs Gestionale (Mese)</p>
+                        <h3 id="mensile-diff-cassa" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
+                        <span class="text-xs text-slate-500 block mt-1">Somma scostamenti</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                        <p class="text-xs text-slate-400 font-medium">Totale Incassi Reali (Mese)</p>
+                        <h3 id="mensile-incassi" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
+                        <span class="text-xs text-slate-500 block mt-1">Fatturato complessivo</span>
+                    </div>
+                </div>
+
+                <!-- Dettaglio Ore per Settore -->
+                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="font-bold text-white text-lg mb-4">Ripartizione Ore per Settore & Personale</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Cucina</span>
+                            <h4 id="settore-cucina" class="text-xl font-bold text-white mt-1">0 h</h4>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Sala</span>
+                            <h4 id="settore-sala" class="text-xl font-bold text-white mt-1">0 h</h4>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Antonio</span>
+                            <h4 id="settore-antonio" class="text-xl font-bold text-white mt-1">0 h</h4>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Pietro</span>
+                            <h4 id="settore-pietro" class="text-xl font-bold text-white mt-1">0 h</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ASSISTENTE AI (Ingrandito) -->
+            <section id="tab-ai" class="hidden space-y-6">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-2xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-robot text-pink-400"></i>
+                        <span>Assistente AI & Business Advisor</span>
+                    </h2>
+                    <p class="text-sm text-slate-400">Fai domande sui dati inseriti, analizza l'andamento del locale e chiedi consigli per migliorare i margini.</p>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col h-[650px] shadow-2xl">
+                    <!-- Chat Messages Box -->
+                    <div id="ai-chat-box" class="flex-1 overflow-y-auto space-y-4 pr-2">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-pink-500/20 text-pink-400 p-2.5 rounded-xl border border-pink-500/30">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow">
+                                <p class="font-semibold text-white mb-1">Ciao! Sono il tuo assistente di gestione locale.</p>
+                                <p>Ho accesso a tutte le chiusure registrate, agli incassi, alle ore e ai costi del personale. Chiedimi pure qualsiasi informazione o consiglio su come ottimizzare il lavoro!</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button onclick="askPreset('Come sono andate le ultime serate in termini di incassi e coperti?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📊 Andamento serate</button>
+                                    <button onclick="askPreset('Quali sono i settori con più ore lavorate e come posso ridurre i costi?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-purple-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">⏰ Analisi ore personale</button>
+                                    <button onclick="askPreset('Dammi dei suggerimenti strategici per aumentare il coperto medio.')" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">💡 Consigli coperto medio</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Bar -->
+                    <div class="mt-4 pt-4 border-t border-slate-800 flex gap-3">
+                        <input type="text" id="ai-user-input" placeholder="Scrivi una domanda sui dati del locale..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-pink-500 text-sm">
+                        <button onclick="sendAIPrompt()" class="bg-pink-600 hover:bg-pink-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-pink-600/20 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Invia</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Script Logica Applicativa -->
+    <script>
+        let chiusure = JSON.parse(localStorage.getItem('chiusure_locale')) || [];
+        let trendChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('chiusura-data').valueAsDate = new Date();
+            updateDashboard();
+            renderStorico();
+            updateAnalisi();
+            initChart();
+        });
+
+        function switchTab(tabId) {
+            ['dashboard', 'nuova', 'storico', 'analisi', 'ai'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${id}`);
+                if(navBtn) {
+                    navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
+                }
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
+            }
+            if(tabId === 'dashboard' || tabId === 'analisi') {
+                updateDashboard();
+                updateAnalisi();
+            }
+        }
+
+        function saveClosing(e) {
+            e.preventDefault();
+            const data = {
+                id: Date.now(),
+                data: document.getElementById('chiusura-data').value,
+                operatore: document.getElementById('chiusura-operatore').value,
+                coperti: parseFloat(document.getElementById('chiusura-coperti').value) || 0,
+                gestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
+                reale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
+                bancomat: parseFloat(document.getElementById('chiusura-bancomat').value) || 0,
+                nonScontrinato: parseFloat(document.getElementById('chiusura-non-scontrinato').value) || 0,
+                asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0,
+                soldiCassa: parseFloat(document.getElementById('chiusura-soldi-cassa').value) || 0,
+                oreCucina: parseFloat(document.getElementById('ore-cucina').value) || 0,
+                oreSala: parseFloat(document.getElementById('ore-sala').value) || 0,
+                oreAntonio: parseFloat(document.getElementById('ore-antonio').value) || 0,
+                orePietro: parseFloat(document.getElementById('ore-pietro').value) || 0,
+                speseDesc: document.getElementById('chiusura-spese-desc').value,
+                speseImporto: parseFloat(document.getElementById('chiusura-spese-importo').value) || 0
+            };
+
+            chiusure.unshift(data);
+            localStorage.setItem('chiusure_locale', JSON.stringify(chiusure));
+            
+            document.getElementById('closingForm').reset();
+            document.getElementById('chiusura-data').valueAsDate = new Date();
+            
+            alert('Chiusura salvata con successo!');
+            switchTab('dashboard');
+            updateDashboard();
+            renderStorico();
+            updateAnalisi();
+        }
+
+        function updateDashboard() {
+            if(chiusure.length === 0) return;
+            const ultima = chiusure[0];
+
+            document.getElementById('dash-incasso-reale').innerText = `€ ${ultima.reale.toFixed(2)}`;
+            document.getElementById('dash-operatore').innerText = `Chiusura di: ${ultima.operatore}`;
+
+            const copertoMedio = ultima.coperti > 0 ? (ultima.reale - ultima.asporto) / ultima.coperti : 0;
+            document.getElementById('dash-coperto-medio').innerText = `€ ${copertoMedio.toFixed(2)}`;
+
+            const diff = ultima.reale - ultima.gestionale;
+            const diffEl = document.getElementById('dash-diff-gestionale');
+            diffEl.innerText = `€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}`;
+            diffEl.className = `text-2xl font-bold mt-2 ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            const totOre = ultima.oreCucina + ultima.oreSala + ultima.oreAntonio + ultima.orePietro;
+            const costoPers = totOre * 18;
+            document.getElementById('dash-tot-ore').innerText = `${totOre} h`;
+            document.getElementById('dash-costo-personale').innerText = `Costo stimato: € ${costoPers.toFixed(2)}`;
+
+            const targetSerata = costoPers * 3;
+            document.getElementById('gauge-target').innerText = `€ ${targetSerata.toFixed(2)}`;
+
+            const gaugeStatus = document.getElementById('gauge-status');
+            const gaugeDesc = document.getElementById('gauge-desc');
+            const gaugeCircle = document.getElementById('gauge-circle');
+
+            if(ultima.reale >= targetSerata) {
+                gaugeStatus.innerText = "Ottima Serata! 🚀";
+                gaugeStatus.className = "text-xl font-bold text-emerald-400 mt-4";
+                gaugeDesc.innerText = "L'incasso supera ampiamente il target stimato del personale.";
+                gaugeCircle.style.borderColor = "#34d399";
+            } else if(ultima.reale >= (targetSerata * 0.85)) {
+                gaugeStatus.innerText = "Serata In Linea 👍";
+                gaugeStatus.className = "text-xl font-bold text-amber-400 mt-4";
+                gaugeDesc.innerText = "Risultato soddisfacente rispetto ai costi sostenuti.";
+                gaugeCircle.style.borderColor = "#fbbf24";
+            } else {
+                gaugeStatus.innerText = "Serata Sotto Soglia ⚠️";
+                gaugeStatus.className = "text-xl font-bold text-rose-400 mt-4";
+                gaugeDesc.innerText = "Attenzione ai costi del personale rispetto agli incassi.";
+                gaugeCircle.style.borderColor = "#f87171";
+            }
+
+            updateChart();
+        }
+
+        function renderStorico() {
+            const tbody = document.getElementById('storico-table-body');
+            tbody.innerHTML = '';
+            chiusure.forEach((c) => {
+                const copertoMedio = c.coperti > 0 ? (c.reale - c.asporto) / c.coperti : 0;
+                const diff = c.reale - c.gestionale;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-900/60 transition">
+                        <td class="p-4 font-medium text-white">${c.data}</td>
+                        <td class="p-4 text-amber-400">${c.operatore}</td>
+                        <td class="p-4 font-bold text-white">€ ${c.reale.toFixed(2)}</td>
+                        <td class="p-4 text-slate-300">€ ${c.gestionale.toFixed(2)}</td>
+                        <td class="p-4 font-semibold ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}">€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}</td>
+                        <td class="p-4 text-slate-300">${c.coperti}</td>
+                        <td class="p-4 text-emerald-400">€ ${copertoMedio.toFixed(2)}</td>
+                        <td class="p-4">
+                            <button onclick="deleteChiusura(${c.id})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/40 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateAnalisi() {
+            let totOre = 0, totPers = 0, totDiff = 0, totInc = 0;
+            let cCucina = 0, cSala = 0, cAntonio = 0, cPietro = 0;
+
+            chiusure.forEach(c => {
+                const oreSerata = c.oreCucina + c.oreSala + c.oreAntonio + c.orePietro;
+                totOre += oreSerata;
+                totPers += oreSerata * 18;
+                totDiff += (c.reale - c.gestionale);
+                totInc += c.reale;
+
+                cCucina += c.oreCucina;
+                cSala += c.oreSala;
+                cAntonio += c.oreAntonio;
+                cPietro += c.orePietro;
+            });
+
+            document.getElementById('mensile-personale').innerText = `€ ${totPers.toFixed(2)}`;
+            document.getElementById('mensile-ore-totali').innerText = `${totOre} ore totali registrate`;
+            
+            const diffEl = document.getElementById('mensile-diff-cassa');
+            diffEl.innerText = `€ ${totDiff >= 0 ? '+' : ''}${totDiff.toFixed(2)}`;
+            diffEl.className = `text-2xl font-bold mt-2 ${totDiff >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            document.getElementById('mensile-incassi').innerText = `€ ${totInc.toFixed(2)}`;
+
+            document.getElementById('settore-cucina').innerText = `${cCucina} h`;
+            document.getElementById('settore-sala').innerText = `${cSala} h`;
+            document.getElementById('settore-antonio').innerText = `${cAntonio} h`;
+            document.getElementById('settore-pietro').innerText = `${cPietro} h`;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const datiInvertiti = [...chiusure].reverse();
+            
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datiInvertiti.map(c => c.data),
+                    datasets: [
+                        {
+                            label: 'Incasso Reale',
+                            data: datiInvertiti.map(c => c.reale),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Gestionale',
+                            data: datiInvertiti.map(c => c.gestionale),
+                            borderColor: '#3b82f6',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if(!trendChartInstance) return;
+            const datiInvertiti = [...chiusure].reverse();
+            trendChartInstance.data.labels = datiInvertiti.map(c => c.data);
+            trendChartInstance.data.datasets[0].data = datiInvertiti.map(c => c.reale);
+            trendChartInstance.data.datasets[1].data = datiInvertiti.map(c => c.gestionale);
+            trendChartInstance.update();
+        }
+
+        function deleteChiusura(id) {
+            if(confirm('Vuoi davvero eliminare questa chiusura?')) {
+                chiusure = chiusure.filter(c => c.id !== id);
+                localStorage.setItem('chiusure_locale', JSON.stringify(chiusure));
+                updateDashboard();
+                renderStorico();
+                updateAnalisi();
+            }
+        }
+
+        function resetData() {
+            if(confirm('Attenzione: tutti i dati salvati verranno cancellati. Continuare?')) {
+                chiusure = [];
+                localStorage.removeItem('chiusure_locale');
+                updateDashboard();
+                renderStorico();
+                updateAnalisi();
+            }
+        }
+
+        function exportCSV() {
+            if(chiusure.length === 0) {
+                alert('Nessun dato da esportare.');
+                return;
+            }
+            let csv = 'Data,Operatore,Coperti,Gestionale,Reale,Bancomat,Non Scontrinato,Asporto,Ore Cucina,Ore Sala,Ore Antonio,Ore Pietro\n';
+            chiusure.forEach(c => {
+                csv += `${c.data},${c.operatore},${c.coperti},${c.gestionale},${c.reale},${c.bancomat},${c.nonScontrinato},${c.asporto},${c.oreCucina},${c.oreSala},${c.oreAntonio},${c.orePietro}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'chiusure_locale.csv';
+            link.click();
+        }
+
+        function askPreset(question) {
+            document.getElementById('ai-user-input').value = question;
+            sendAIPrompt();
+        }
+
+        function sendAIPrompt() {
+            const input = document.getElementById('ai-user-input');
+            const query = input.value.trim();
+            if(!query) return;
+
+            const chatBox = document.getElementById('ai-chat-box');
+            
+            chatBox.innerHTML += `
+                <div class="flex items-start justify-end space-x-3">
+                    <div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl text-sm max-w-2xl text-slate-100 shadow">
+                        <p>${query}</p>
+                    </div>
+                </div>
+            `;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            setTimeout(() => {
+                let risposta = "Ho analizzato i tuoi dati registrati.";
+                const qLower = query.toLowerCase();
+
+                if(qLower.includes('andamento') || qLower.includes('serate')) {
+                    if(chiusure.length > 0) {
+                        const ult = chiusure[0];
+                        risposta = `L'ultima serata registrata in data **${ult.data}** (chiusa da **${ult.operatore}**) ha registrato un incasso reale di **€ ${ult.reale.toFixed(2)}** a fronte di **${ult.coperti} coperti**. Il coperto medio è di **€ ${((ult.reale - ult.asporto)/ult.coperti).toFixed(2)}**.`;
+                    } else {
+                        risposta = "Non hai ancora inserito nessuna chiusura nello storico.";
+                    }
+                } else if(qLower.includes('ore') || qLower.includes('personale') || qLower.includes('costi')) {
+                    let totOre = chiusure.reduce((acc, c) => acc + c.oreCucina + c.oreSala + c.oreAntonio + c.orePietro, 0);
+                    let totSpesa = totOre * 18;
+                    risposta = `In totale hai registrato **${totOre} ore di lavoro**, per un costo stimato complessivo di **€ ${totSpesa.toFixed(2)}** (calcolato a €18/h). Ti consiglio di monitorare il rapporto tra le ore di cucina e di sala per ottimizzare i turni nei giorni infrasettimanali.`;
+                } else if(qLower.includes('coperto medio') || qLower.includes('migliorare')) {
+                    risposta = "Per aumentare il coperto medio, potresti puntare su up-selling sui dolci, vini e coperti extra o pacchetti promozionali per l'asporto. Controlla regolarmente l'incasso asporto rispetto alla sala nella sezione Analisi.";
+                } else {
+                    risposta = `Ricevuto! Basandomi sulle ${chiusure.length} serate registrate, il locale sta mantenendo una buona tracciabilità. Continua ad inserire regolarmente i dati ogni sera per avere report sempre più accurati e puntuali inviati ogni mattina alle 7:30 a Pietro e Antonio su WhatsApp!`;
+                }
+
+                chatBox.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-pink-500/20 text-pink-400 p-2.5 rounded-xl border border-pink-500/30">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow">
+                            <p>${risposta}</p>
+                        </div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 600);
+        }
+    </script>
+</body>
+</html>
