@@ -94,8 +94,8 @@
                     </button>
                 </div>
 
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- KPI Cards (Aggiornate con Salifou) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Incasso Reale (Ultima Serata)</p>
                         <h3 id="dash-incasso-reale" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
@@ -112,9 +112,14 @@
                         <span id="dash-asporto-ordini" class="text-xs text-slate-400 block mt-1">0 ordini effettuati</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Salifou (Ultima Serata)</p>
+                        <h3 id="dash-salifou" class="text-2xl font-bold text-pink-400 mt-2">€ 0,00</h3>
+                        <span id="dash-salifou-perc" class="text-xs text-slate-400 block mt-1">0% dell'incasso</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Differenza Gestionale / Reale</p>
                         <h3 id="dash-diff-gestionale" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
-                        <span id="dash-diff-label" class="text-xs text-slate-500 block mt-1">Escluso Salifou</span>
+                        <span class="text-xs text-slate-500 block mt-1">Escluso Salifou</span>
                     </div>
                 </div>
 
@@ -282,6 +287,7 @@
                                     <th class="p-4">Operatore</th>
                                     <th class="p-4">Inc. Reale</th>
                                     <th class="p-4">Asporto</th>
+                                    <th class="p-4">Salifou</th>
                                     <th class="p-4">Coperti</th>
                                     <th class="p-4">Cop. Medio</th>
                                     <th class="p-4">Diff. Cassa</th>
@@ -468,6 +474,10 @@
             document.getElementById('dash-asporto').innerText = `€ ${ultima.asporto.toFixed(2)}`;
             document.getElementById('dash-asporto-ordini').innerText = `${ultima.asportoOrdini} ordini effettuati`;
 
+            document.getElementById('dash-salifou').innerText = `€ ${ultima.salifou.toFixed(2)}`;
+            const percSalifou = ultima.reale > 0 ? ((ultima.salifou / ultima.reale) * 100).toFixed(1) : 0;
+            document.getElementById('dash-salifou-perc').innerText = `${percSalifou}% dell'incasso`;
+
             const diff = ultima.reale - ultima.gestionale;
             const diffEl = document.getElementById('dash-diff-gestionale');
             diffEl.innerText = `€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}`;
@@ -475,7 +485,6 @@
 
             const totOre = ultima.oreCucina + ultima.oreSala + ultima.oreAntonio + ultima.orePietro;
             const costoPers = totOre * 18;
-            document.getElementById('dash-tot-ore')?.innerText ? document.getElementById('dash-tot-ore').innerText = `${totOre} h` : null;
 
             const puntoPareggio = costoPers * 3;
             document.getElementById('gauge-target').innerText = `€ ${puntoPareggio.toFixed(2)}`;
@@ -516,6 +525,7 @@
                         <td class="p-4 text-amber-400">${c.operatore}</td>
                         <td class="p-4 font-bold text-white">€ ${c.reale.toFixed(2)}</td>
                         <td class="p-4 text-blue-400">€ ${c.asporto.toFixed(2)} <span class="text-xs text-slate-400">(${c.asportoOrdini} ord.)</span></td>
+                        <td class="p-4 text-pink-400 font-medium">€ ${c.salifou.toFixed(2)}</td>
                         <td class="p-4 text-slate-300">${c.coperti}</td>
                         <td class="p-4 text-emerald-400">€ ${copertoMedio.toFixed(2)}</td>
                         <td class="p-4 font-semibold ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}">€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}</td>
@@ -668,18 +678,18 @@
                 let risposta = "Ho analizzato i tuoi dati registrati.";
                 const qLower = query.toLowerCase();
 
-                if(qLower.includes('affitto') || qLower.includes('pareggio')) {
-                    risposta = `Avendo il locale di proprietà (zero affitto) e con Pietro e Antonio come soci operativi, i vostri costi fissi sono notevolmente più bassi rispetto a una pizzeria standard. Il punto di pareggio calcolato vi assicura un margine di sicurezza eccellente.`;
-                } else if(qLower.includes('asporto') || qLower.includes('ordini')) {
+                if(qLower.includes('salifou')) {
                     if(chiusure.length > 0) {
                         const ult = chiusure[0];
-                        const mediaOrdine = ult.asportoOrdini > 0 ? (ult.asporto / ult.asportoOrdini).toFixed(2) : 0;
-                        risposta = `Nell'ultima serata avete registrato **€ ${ult.asporto.toFixed(2)}** di asporto suddivisi in **${ult.asportoOrdini} ordini** (con un valore medio di circa **€ ${mediaOrdine}** ad ordine).`;
+                        const perc = ult.reale > 0 ? ((ult.salifou / ult.reale) * 100).toFixed(1) : 0;
+                        risposta = `Nell'ultima serata registrata, Salifou ammonta a **€ ${ult.salifou.toFixed(2)}**, pari al **${perc}%** dell'incasso reale.`;
                     } else {
-                        risposta = "Non hai ancora inserito chiusure nello storico.";
+                        risposta = "Non ci sono ancora chiusure registrate nello storico.";
                     }
+                } else if(qLower.includes('affitto') || qLower.includes('pareggio')) {
+                    risposta = `Avendo il locale di proprietà (zero affitto) e con Pietro e Antonio come soci operativi, i vostri costi fissi sono notevolmente più bassi e il punto di pareggio vi garantisce un'ottima profittabilità.`;
                 } else {
-                    risposta = `Ricevuto! Il sistema ora tiene conto sia del numero di ordini d'asporto che della struttura senza affitto con soci operativi.`;
+                    risposta = `Ricevuto! Il sistema monitora costantemente tutti i parametri inseriti, inclusi gli asporti e Salifou.`;
                 }
 
                 chatBox.innerHTML += `
