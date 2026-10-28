@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Chiusure Locale</title>
+    <title>Gestione Chiusure Pizzeria</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome per le icone -->
@@ -22,10 +22,10 @@
         <div>
             <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
                 <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl font-bold shadow-lg shadow-amber-500/20">
-                    <i class="fa-solid fa-utensils text-xl"></i>
+                    <i class="fa-solid fa-pizza-slice text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg tracking-tight text-white">Gestione Locale</h1>
+                    <h1 class="font-bold text-lg tracking-tight text-white">Pizzeria Manager</h1>
                     <span class="text-xs text-amber-400 font-medium">Controllo & Chiusure</span>
                 </div>
             </div>
@@ -54,8 +54,8 @@
         </div>
         <div class="p-4 border-t border-slate-800">
             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
-                <p class="font-semibold text-slate-300">Costo Orario Dipendenti:</p>
-                <p class="text-amber-400 font-bold mt-0.5">€ 18,00 / ora (Tutto compreso)</p>
+                <p class="font-semibold text-slate-300">Note Struttura:</p>
+                <p class="text-emerald-400 font-medium mt-0.5">Senza affitto | Soci Operativi</p>
             </div>
         </div>
     </aside>
@@ -67,9 +67,9 @@
         <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <div class="bg-amber-500 text-slate-950 p-2 rounded-lg font-bold">
-                    <i class="fa-solid fa-utensils"></i>
+                    <i class="fa-solid fa-pizza-slice"></i>
                 </div>
-                <span class="font-bold text-white">Gestione Locale</span>
+                <span class="font-bold text-white">Pizzeria Manager</span>
             </div>
             <div class="flex space-x-2">
                 <button onclick="switchTab('dashboard')" class="p-2 bg-slate-800 rounded-lg text-amber-400"><i class="fa-solid fa-chart-pie"></i></button>
@@ -107,27 +107,27 @@
                         <span class="text-xs text-slate-500 block mt-1">(Incassi - Asporto) / Coperti</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Differenza Gestionale / Reale</p>
-                        <h3 id="dash-diff-gestionale" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
-                        <span id="dash-diff-label" class="text-xs text-slate-500 block mt-1">Escluso non scontrinato</span>
+                        <p class="text-xs font-medium text-slate-400">Totale Asporto (Serata)</p>
+                        <h3 id="dash-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
+                        <span id="dash-asporto-ordini" class="text-xs text-slate-400 block mt-1">0 ordini effettuati</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Totale Ore Lavorate</p>
-                        <h3 id="dash-tot-ore" class="text-2xl font-bold text-purple-400 mt-2">0 h</h3>
-                        <span id="dash-costo-personale" class="text-xs text-slate-400 block mt-1">Costo stimato: € 0,00</span>
+                        <p class="text-xs font-medium text-slate-400">Differenza Gestionale / Reale</p>
+                        <h3 id="dash-diff-gestionale" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
+                        <span id="dash-diff-label" class="text-xs text-slate-500 block mt-1">Escluso Salifou</span>
                     </div>
                 </div>
 
                 <!-- Bussola di Profittabilità & Grafici -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Bussola / Tachimetro Profittabilità -->
+                    <!-- Bussola / Tachimetro Punto di Pareggio -->
                     <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
                         <div>
                             <h3 class="font-bold text-white text-lg flex items-center space-x-2">
                                 <i class="fa-solid fa-compass text-amber-400"></i>
-                                <span>Bussola Profittabilità</span>
+                                <span>Bussola & Punto di Pareggio</span>
                             </h3>
-                            <p class="text-xs text-slate-400 mt-1">Conto della serva: (Ore Totali × 18) × 3 vs Incasso Reale</p>
+                            <p class="text-xs text-slate-400 mt-1">Break-Even: (Ore Totali × 18) × 3</p>
                         </div>
                         <div class="my-6 text-center">
                             <div id="gauge-container" class="relative w-48 h-24 mx-auto overflow-hidden">
@@ -137,7 +137,7 @@
                             <p id="gauge-desc" class="text-xs text-slate-400 mt-1">Inserisci la chiusura per valutare la serata.</p>
                         </div>
                         <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
-                            <span class="text-slate-400">Soglia Target Serata:</span>
+                            <span class="text-slate-400">Punto di Pareggio (Target):</span>
                             <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
                         </div>
                     </div>
@@ -195,13 +195,20 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Non Scontrinato (€) <span class="text-xs text-amber-400 font-normal">(Escluso dal calcolo di cassa)</span></label>
-                            <input type="number" step="0.01" id="chiusura-non-scontrinato" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Salifou (€) <span class="text-xs text-amber-400 font-normal">(Escluso dal calcolo di cassa)</span></label>
+                            <input type="number" step="0.01" id="chiusura-salifou" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Totale Asporto (€)</label>
                             <input type="number" step="0.01" id="chiusura-asporto" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Numero Ordini Asporto</label>
+                            <input type="number" id="chiusura-asporto-ordini" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-6 pt-4 border-t border-slate-800">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Soldi in Cassa (€)</label>
                             <input type="number" step="0.01" id="chiusura-soldi-cassa" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
@@ -221,11 +228,11 @@
                                 <input type="number" step="0.5" id="ore-sala" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Ore Antonio</label>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Antonio (Proprietario)</label>
                                 <input type="number" step="0.5" id="ore-antonio" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Ore Pietro</label>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Pietro (Proprietario)</label>
                                 <input type="number" step="0.5" id="ore-pietro" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
@@ -274,11 +281,10 @@
                                     <th class="p-4">Data</th>
                                     <th class="p-4">Operatore</th>
                                     <th class="p-4">Inc. Reale</th>
-                                    <th class="p-4">Gestionale</th>
-                                    <th class="p-4">Diff.</th>
-                                    <th class="p-4">Non Scontr.</th>
+                                    <th class="p-4">Asporto</th>
                                     <th class="p-4">Coperti</th>
-                                    <th class="p-4">Coperto Medio</th>
+                                    <th class="p-4">Cop. Medio</th>
+                                    <th class="p-4">Diff. Cassa</th>
                                     <th class="p-4">Azioni</th>
                                 </tr>
                             </thead>
@@ -328,11 +334,11 @@
                             <h4 id="settore-sala" class="text-xl font-bold text-white mt-1">0 h</h4>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-400">Antonio</span>
+                            <span class="text-xs text-slate-400">Antonio (Proprietario)</span>
                             <h4 id="settore-antonio" class="text-xl font-bold text-white mt-1">0 h</h4>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-400">Pietro</span>
+                            <span class="text-xs text-slate-400">Pietro (Proprietario)</span>
                             <h4 id="settore-pietro" class="text-xl font-bold text-white mt-1">0 h</h4>
                         </div>
                     </div>
@@ -357,12 +363,12 @@
                                 <i class="fa-solid fa-robot"></i>
                             </div>
                             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-sm max-w-2xl text-slate-200 shadow">
-                                <p class="font-semibold text-white mb-1">Ciao! Sono il tuo assistente di gestione locale.</p>
-                                <p>Ho accesso a tutte le chiusure registrate, agli incassi, alle ore e ai costi del personale. Chiedimi pure qualsiasi informazione o consiglio su come ottimizzare il lavoro!</p>
+                                <p class="font-semibold text-white mb-1">Ciao! Sono il tuo assistente di gestione pizzeria.</p>
+                                <p>Tieni conto che ho memorizzato che Pietro e Antonio sono soci proprietari e che non pagate l'affitto, il che rende i vostri margini netti e il punto di pareggio ancora più favorevoli! Chiedimi pure qualsiasi informazione o consiglio sui dati registrati.</p>
                                 <div class="mt-3 flex flex-wrap gap-2">
-                                    <button onclick="askPreset('Come sono andate le ultime serate in termini di incassi e coperti?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📊 Andamento serate</button>
-                                    <button onclick="askPreset('Quali sono i settori con più ore lavorate e come posso ridurre i costi?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-purple-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">⏰ Analisi ore personale</button>
-                                    <button onclick="askPreset('Dammi dei suggerimenti strategici per aumentare il coperto medio.')" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">💡 Consigli coperto medio</button>
+                                    <button onclick="askPreset('Come sono andate le ultime serate in termini di asporto e coperti?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">📊 Andamento asporti</button>
+                                    <button onclick="askPreset('Qual è il nostro punto di pareggio considerando che non abbiamo affitto?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-purple-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">🎯 Analisi punto di pareggio</button>
+                                    <button onclick="askPreset('Dammi dei suggerimenti strategici per ottimizzare i guadagni.')" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 px-3 py-1.5 rounded-lg border border-slate-700 transition">💡 Consigli di gestione</button>
                                 </div>
                             </div>
                         </div>
@@ -370,7 +376,7 @@
 
                     <!-- Input Bar -->
                     <div class="mt-4 pt-4 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="ai-user-input" placeholder="Scrivi una domanda sui dati del locale..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-pink-500 text-sm">
+                        <input type="text" id="ai-user-input" placeholder="Scrivi una domanda sui dati della pizzeria..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-pink-500 text-sm">
                         <button onclick="sendAIPrompt()" class="bg-pink-600 hover:bg-pink-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-pink-600/20 transition flex items-center space-x-2">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>Invia</span>
@@ -384,7 +390,7 @@
 
     <!-- Script Logica Applicativa -->
     <script>
-        let chiusure = JSON.parse(localStorage.getItem('chiusure_locale')) || [];
+        let chiusure = JSON.parse(localStorage.getItem('chiusure_pizzeria')) || [];
         let trendChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -424,8 +430,9 @@
                 gestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
                 reale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
                 bancomat: parseFloat(document.getElementById('chiusura-bancomat').value) || 0,
-                nonScontrinato: parseFloat(document.getElementById('chiusura-non-scontrinato').value) || 0,
+                salifou: parseFloat(document.getElementById('chiusura-salifou').value) || 0,
                 asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0,
+                asportoOrdini: parseInt(document.getElementById('chiusura-asporto-ordini').value) || 0,
                 soldiCassa: parseFloat(document.getElementById('chiusura-soldi-cassa').value) || 0,
                 oreCucina: parseFloat(document.getElementById('ore-cucina').value) || 0,
                 oreSala: parseFloat(document.getElementById('ore-sala').value) || 0,
@@ -436,7 +443,7 @@
             };
 
             chiusure.unshift(data);
-            localStorage.setItem('chiusure_locale', JSON.stringify(chiusure));
+            localStorage.setItem('chiusure_pizzeria', JSON.stringify(chiusure));
             
             document.getElementById('closingForm').reset();
             document.getElementById('chiusura-data').valueAsDate = new Date();
@@ -458,7 +465,9 @@
             const copertoMedio = ultima.coperti > 0 ? (ultima.reale - ultima.asporto) / ultima.coperti : 0;
             document.getElementById('dash-coperto-medio').innerText = `€ ${copertoMedio.toFixed(2)}`;
 
-            // Differenza reale vs gestionale (ESCLUSO IL NON SCONTRINATO)
+            document.getElementById('dash-asporto').innerText = `€ ${ultima.asporto.toFixed(2)}`;
+            document.getElementById('dash-asporto-ordini').innerText = `${ultima.asportoOrdini} ordini effettuati`;
+
             const diff = ultima.reale - ultima.gestionale;
             const diffEl = document.getElementById('dash-diff-gestionale');
             diffEl.innerText = `€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}`;
@@ -466,30 +475,29 @@
 
             const totOre = ultima.oreCucina + ultima.oreSala + ultima.oreAntonio + ultima.orePietro;
             const costoPers = totOre * 18;
-            document.getElementById('dash-tot-ore').innerText = `${totOre} h`;
-            document.getElementById('dash-costo-personale').innerText = `Costo stimato: € ${costoPers.toFixed(2)}`;
+            document.getElementById('dash-tot-ore')?.innerText ? document.getElementById('dash-tot-ore').innerText = `${totOre} h` : null;
 
-            const targetSerata = costoPers * 3;
-            document.getElementById('gauge-target').innerText = `€ ${targetSerata.toFixed(2)}`;
+            const puntoPareggio = costoPers * 3;
+            document.getElementById('gauge-target').innerText = `€ ${puntoPareggio.toFixed(2)}`;
 
             const gaugeStatus = document.getElementById('gauge-status');
             const gaugeDesc = document.getElementById('gauge-desc');
             const gaugeCircle = document.getElementById('gauge-circle');
 
-            if(ultima.reale >= targetSerata) {
-                gaugeStatus.innerText = "Ottima Serata! 🚀";
+            if(ultima.reale >= puntoPareggio) {
+                gaugeStatus.innerText = "Sopra Pareggio 🚀";
                 gaugeStatus.className = "text-xl font-bold text-emerald-400 mt-4";
-                gaugeDesc.innerText = "L'incasso supera ampiamente il target stimato del personale.";
+                gaugeDesc.innerText = "L'incasso supera il punto di pareggio. Ottima profittabilità!";
                 gaugeCircle.style.borderColor = "#34d399";
-            } else if(ultima.reale >= (targetSerata * 0.85)) {
-                gaugeStatus.innerText = "Serata In Linea 👍";
+            } else if(ultima.reale >= (puntoPareggio * 0.9)) {
+                gaugeStatus.innerText = "Vicino al Pareggio 👍";
                 gaugeStatus.className = "text-xl font-bold text-amber-400 mt-4";
-                gaugeDesc.innerText = "Risultato soddisfacente rispetto ai costi sostenuti.";
+                gaugeDesc.innerText = "Serata in linea con i costi di gestione.";
                 gaugeCircle.style.borderColor = "#fbbf24";
             } else {
-                gaugeStatus.innerText = "Serata Sotto Soglia ⚠️";
+                gaugeStatus.innerText = "Sotto il Pareggio ⚠️";
                 gaugeStatus.className = "text-xl font-bold text-rose-400 mt-4";
-                gaugeDesc.innerText = "Attenzione ai costi del personale rispetto agli incassi.";
+                gaugeDesc.innerText = "Incasso inferiore al punto di pareggio stimato.";
                 gaugeCircle.style.borderColor = "#f87171";
             }
 
@@ -507,11 +515,10 @@
                         <td class="p-4 font-medium text-white">${c.data}</td>
                         <td class="p-4 text-amber-400">${c.operatore}</td>
                         <td class="p-4 font-bold text-white">€ ${c.reale.toFixed(2)}</td>
-                        <td class="p-4 text-slate-300">€ ${c.gestionale.toFixed(2)}</td>
-                        <td class="p-4 font-semibold ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}">€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}</td>
-                        <td class="p-4 text-pink-400 font-medium">€ ${c.nonScontrinato.toFixed(2)}</td>
+                        <td class="p-4 text-blue-400">€ ${c.asporto.toFixed(2)} <span class="text-xs text-slate-400">(${c.asportoOrdini} ord.)</span></td>
                         <td class="p-4 text-slate-300">${c.coperti}</td>
                         <td class="p-4 text-emerald-400">€ ${copertoMedio.toFixed(2)}</td>
+                        <td class="p-4 font-semibold ${diff >= 0 ? 'text-emerald-400' : 'text-rose-400'}">€ ${diff >= 0 ? '+' : ''}${diff.toFixed(2)}</td>
                         <td class="p-4">
                             <button onclick="deleteChiusura(${c.id})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/40 transition"><i class="fa-solid fa-trash text-xs"></i></button>
                         </td>
@@ -602,7 +609,7 @@
         function deleteChiusura(id) {
             if(confirm('Vuoi davvero eliminare questa chiusura?')) {
                 chiusure = chiusure.filter(c => c.id !== id);
-                localStorage.setItem('chiusure_locale', JSON.stringify(chiusure));
+                localStorage.setItem('chiusure_pizzeria', JSON.stringify(chiusure));
                 updateDashboard();
                 renderStorico();
                 updateAnalisi();
@@ -612,7 +619,7 @@
         function resetData() {
             if(confirm('Attenzione: tutti i dati salvati verranno cancellati. Continuare?')) {
                 chiusure = [];
-                localStorage.removeItem('chiusure_locale');
+                localStorage.removeItem('chiusure_pizzeria');
                 updateDashboard();
                 renderStorico();
                 updateAnalisi();
@@ -624,14 +631,14 @@
                 alert('Nessun dato da esportare.');
                 return;
             }
-            let csv = 'Data,Operatore,Coperti,Gestionale,Reale,Bancomat,Non Scontrinato,Asporto,Ore Cucina,Ore Sala,Ore Antonio,Ore Pietro\n';
+            let csv = 'Data,Operatore,Coperti,Gestionale,Reale,Bancomat,Salifou,Asporto (€),Ordini Asporto,Ore Cucina,Ore Sala,Ore Antonio,Ore Pietro\n';
             chiusure.forEach(c => {
-                csv += `${c.data},${c.operatore},${c.coperti},${c.gestionale},${c.reale},${c.bancomat},${c.nonScontrinato},${c.asporto},${c.oreCucina},${c.oreSala},${c.oreAntonio},${c.orePietro}\n`;
+                csv += `${c.data},${c.operatore},${c.coperti},${c.gestionale},${c.reale},${c.bancomat},${c.salifou},${c.asporto},${c.asportoOrdini},${c.oreCucina},${c.oreSala},${c.oreAntonio},${c.orePietro}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'chiusure_locale.csv';
+            link.download = 'chiusure_pizzeria.csv';
             link.click();
         }
 
@@ -661,20 +668,18 @@
                 let risposta = "Ho analizzato i tuoi dati registrati.";
                 const qLower = query.toLowerCase();
 
-                if(qLower.includes('andamento') || qLower.includes('serate')) {
+                if(qLower.includes('affitto') || qLower.includes('pareggio')) {
+                    risposta = `Avendo il locale di proprietà (zero affitto) e con Pietro e Antonio come soci operativi, i vostri costi fissi sono notevolmente più bassi rispetto a una pizzeria standard. Il punto di pareggio calcolato vi assicura un margine di sicurezza eccellente.`;
+                } else if(qLower.includes('asporto') || qLower.includes('ordini')) {
                     if(chiusure.length > 0) {
                         const ult = chiusure[0];
-                        const percNero = ultima.reale > 0 ? ((ult.nonScontrinato / ult.reale) * 100).toFixed(1) : 0;
-                        risposta = `L'ultima serata in data **${ult.data}** (chiusa da **${ult.operatore}**) ha registrato un incasso reale di **€ ${ult.reale.toFixed(2)}** con **${ult.coperti} coperti**. Il non scontrinato è di **€ ${ult.nonScontrinato.toFixed(2)}** (${percNero}% dell'incasso).`;
+                        const mediaOrdine = ult.asportoOrdini > 0 ? (ult.asporto / ult.asportoOrdini).toFixed(2) : 0;
+                        risposta = `Nell'ultima serata avete registrato **€ ${ult.asporto.toFixed(2)}** di asporto suddivisi in **${ult.asportoOrdini} ordini** (con un valore medio di circa **€ ${mediaOrdine}** ad ordine).`;
                     } else {
-                        risposta = "Non hai ancora inserito nessuna chiusura nello storico.";
+                        risposta = "Non hai ancora inserito chiusure nello storico.";
                     }
-                } else if(qLower.includes('ore') || qLower.includes('personale') || qLower.includes('costi')) {
-                    let totOre = chiusure.reduce((acc, c) => acc + c.oreCucina + c.oreSala + c.oreAntonio + c.orePietro, 0);
-                    let totSpesa = totOre * 18;
-                    risposta = `In totale hai registrato **${totOre} ore di lavoro**, per un costo stimato di **€ ${totSpesa.toFixed(2)}** (a €18/h).`;
                 } else {
-                    risposta = `Ricevuto! Il calcolo della differenza di cassa considera esclusivamente l'incasso reale rispetto a quello del gestionale, tenendo il non scontrinato separato come da te richiesto.`;
+                    risposta = `Ricevuto! Il sistema ora tiene conto sia del numero di ordini d'asporto che della struttura senza affitto con soci operativi.`;
                 }
 
                 chatBox.innerHTML += `
