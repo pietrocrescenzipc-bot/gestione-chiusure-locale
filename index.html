@@ -148,7 +148,7 @@
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Scontrino Fiscale</p>
-                        <h3 id="dash-scontrino" class="text-2xl font-bold text-amber-300 mt-2">0</h3>
+                        <h3 id="dash-scontrino" class="text-2xl font-bold text-amber-300 mt-2">€ 0,00</h3>
                         <span class="text-xs text-slate-500 block mt-1">Ultima Serata</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
@@ -173,14 +173,36 @@
                     </div>
                 </div>
 
-                <!-- Grafico Andamento Recente -->
-                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
-                        <span class="text-xs text-slate-400">Ultime serate</span>
+                <!-- Bussola & Grafico Andamento Recente -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Bussola / Tachimetro Punto di Pareggio -->
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-white text-lg flex items-center space-x-2">
+                                <i class="fa-solid fa-compass text-amber-400"></i>
+                                <span>Bussola & Pareggio</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Target basato sulle ore di lavoro</p>
+                        </div>
+                        <div class="my-6 text-center">
+                            <h4 id="gauge-status" class="text-xl font-bold text-white mt-2">In attesa di dati</h4>
+                            <p id="gauge-desc" class="text-xs text-slate-400 mt-1">Inserisci la chiusura per valutare.</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
+                            <span class="text-slate-400">Punto di Pareggio (Target):</span>
+                            <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
+                        </div>
                     </div>
-                    <div class="h-64 relative">
-                        <canvas id="trendChart"></canvas>
+
+                    <!-- Grafico Andamento Recente -->
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
+                            <span class="text-xs text-slate-400">Ultime serate</span>
+                        </div>
+                        <div class="h-64 relative">
+                            <canvas id="trendChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -207,8 +229,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Scontrino Fiscale</label>
-                            <input type="text" id="chiusura-scontrino" placeholder="0 o N. 150" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Scontrino Fiscale (€)</label>
+                            <input type="number" step="0.01" id="chiusura-scontrino" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Coperti</label>
@@ -309,7 +331,7 @@
                                 <tr class="bg-slate-900 border-b border-slate-800 text-slate-400">
                                     <th class="p-4">Data</th>
                                     <th class="p-4">Operatore</th>
-                                    <th class="p-4">Scontrino</th>
+                                    <th class="p-4">Scontrino Fiscale</th>
                                     <th class="p-4">Inc. Reale</th>
                                     <th class="p-4">Asporto</th>
                                     <th class="p-4">Salifou</th>
@@ -407,7 +429,7 @@
             const data = {
                 data: document.getElementById('chiusura-data').value,
                 operatore: document.getElementById('chiusura-operatore').value,
-                scontrinoFiscale: document.getElementById('chiusura-scontrino').value || '0',
+                scontrinoFiscale: parseFloat(document.getElementById('chiusura-scontrino').value) || 0,
                 coperti: parseInt(document.getElementById('chiusura-coperti').value) || 0,
                 incassoGestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
                 incassoReale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
@@ -428,7 +450,7 @@
             chiusure.unshift(data);
             localStorage.setItem('pizzeria_chiusure', JSON.stringify(chiusure));
 
-            // INSERISCI QUI IL TUO WEBHOOK DI MAKE / INTEGRATION PER INVIARE I DATI
+            // Esempio chiamata webhook Make / Integration
             // fetch('TUO_URL_WEBHOOK_MAKE', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }).catch(err => console.log(err));
 
             alert('Chiusura salvata con successo!');
@@ -438,17 +460,39 @@
         }
 
         function updateDashboard() {
-            if(chiusure.length === 0) return;
+            if(chiusure.length === 0) {
+                document.getElementById('dash-scontrino').innerText = '€ 0,00';
+                document.getElementById('gauge-status').innerText = 'In attesa di dati';
+                document.getElementById('gauge-target').innerText = '€ 0,00';
+                return;
+            }
             const u = chiusure[0];
             document.getElementById('dash-incasso-reale').innerText = `€ ${u.incassoReale.toFixed(2)}`;
             document.getElementById('dash-operatore').innerText = `Operatore: ${u.operatore}`;
-            document.getElementById('dash-scontrino').innerText = u.scontrinoFiscale || '0';
+            document.getElementById('dash-scontrino').innerText = `€ ${u.scontrinoFiscale.toFixed(2)}`;
             document.getElementById('dash-coperto-medio').innerText = `€ ${u.copertoMedio.toFixed(2)}`;
             document.getElementById('dash-asporto').innerText = `€ ${u.asporto.toFixed(2)}`;
             document.getElementById('dash-asporto-ordini').innerText = `${u.asportoOrdini} ordini effettuati`;
             document.getElementById('dash-salifou').innerText = `€ ${u.salifou.toFixed(2)}`;
             document.getElementById('dash-fondo-cassa').innerText = `€ ${u.fondoCassa.toFixed(2)}`;
             document.getElementById('dash-ammanco-label').innerText = `Ammanco cassa: € ${u.ammancoCassa.toFixed(2)}`;
+
+            // Calcolo Bussola & Break-Even (Ore Totali * 18 * 3)
+            const oreTotali = u.oreCucina + u.oreSala + u.oreAntonio + u.orePietro;
+            const targetPareggio = (oreTotali * 18) * 3;
+            document.getElementById('gauge-target').innerText = `€ ${targetPareggio.toFixed(2)}`;
+
+            if(oreTotali > 0) {
+                if(u.incassoReale >= targetPareggio) {
+                    document.getElementById('gauge-status').innerText = 'Ottimale (Inutile/Profitto)';
+                    document.getElementById('gauge-status').className = 'text-xl font-bold text-emerald-400 mt-2';
+                } else {
+                    document.getElementById('gauge-status').innerText = 'Sotto il pareggio';
+                    document.getElementById('gauge-status').className = 'text-xl font-bold text-rose-400 mt-2';
+                }
+            } else {
+                document.getElementById('gauge-status').innerText = 'Nessuna ora inserita';
+            }
 
             renderTrendChart();
         }
@@ -463,7 +507,7 @@
                 <tr class="hover:bg-slate-900/50">
                     <td class="p-4">${c.data}</td>
                     <td class="p-4">${c.operatore}</td>
-                    <td class="p-4 font-semibold text-amber-400">${c.scontrinoFiscale || '0'}</td>
+                    <td class="p-4 font-semibold text-amber-300">€ ${c.scontrinoFiscale.toFixed(2)}</td>
                     <td class="p-4 font-bold text-white">€ ${c.incassoReale.toFixed(2)}</td>
                     <td class="p-4 text-blue-400">€ ${c.asporto.toFixed(2)}</td>
                     <td class="p-4 text-pink-400">€ ${c.salifou.toFixed(2)}</td>
@@ -501,10 +545,11 @@
             }
             const filtered = chiusure.filter(c => c.operatore === op);
             const tot = filtered.reduce((acc, c) => acc + c.incassoReale, 0);
+            const ultimoScontrino = filtered.length > 0 ? filtered[0].scontrinoFiscale : 0;
             cont.innerHTML = `
                 <p>Serate gestite: <strong class="text-white">${filtered.length}</strong></p>
                 <p>Incasso totale: <strong class="text-amber-400">€ ${tot.toFixed(2)}</strong></p>
-                <p>Ultimo scontrino: <strong class="text-white">${filtered.length > 0 ? (filtered[0].scontrinoFiscale || '0') : '0'}</strong></p>
+                <p>Ultimo scontrino: <strong class="text-amber-300">€ ${ultimoScontrino.toFixed(2)}</strong></p>
             `;
         }
 
@@ -529,7 +574,7 @@
 
         function exportCSV() {
             if(chiusure.length === 0) { alert('Nessun dato da esportare'); return; }
-            let csv = 'Data,Operatore,Scontrino,IncassoReale,Asporto,Salifou,FondoCassa,Ammanco,Coperti,CopertoMedio\n';
+            let csv = 'Data,Operatore,ScontrinoFiscale,IncassoReale,Asporto,Salifou,FondoCassa,Ammanco,Coperti,CopertoMedio\n';
             chiusure.forEach(c => {
                 csv += `${c.data},${c.operatore},${c.scontrinoFiscale},${c.incassoReale},${c.asporto},${c.salifou},${c.fondoCassa},${c.ammancoCassa},${c.coperti},${c.copertoMedio}\n`;
             });
@@ -562,7 +607,6 @@
             });
         }
 
-        // Imposta la data odierna nel form di default
         document.getElementById('chiusura-data').valueAsDate = new Date();
         if(chiusure.length > 0) updateDashboard();
     </script>
