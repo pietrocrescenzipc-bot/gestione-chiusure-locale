@@ -18,16 +18,20 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar */
-        aside { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: 0.3s; z-index: 100; }
-        .logo-area { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .logo-area h2 { color: var(--accent); font-size: 1.1rem; }
-        .logo-area p { font-size: 0.75rem; color: var(--text-muted); }
-        .menu-toggle { background: none; border: none; color: var(--accent); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        /* Sidebar fissa e pulita */
+        aside { width: 250px; min-width: 250px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: all 0.3s ease; z-index: 100; }
+        aside.collapsed { width: 70px; min-width: 70px; }
+        aside.collapsed .logo-text, aside.collapsed .nav-links span:not(.icon) { display: none; }
+        
+        .logo-area { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; height: 75px; }
+        .logo-text h2 { color: var(--accent); font-size: 1.05rem; white-space: nowrap; }
+        .logo-text p { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+        .menu-toggle { background: none; border: none; color: var(--accent); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px; }
 
         .nav-links { list-style: none; padding: 15px 0; flex: 1; overflow-y: auto; }
-        .nav-links li { padding: 12px 20px; cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; }
+        .nav-links li { padding: 12px 20px; cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 0.9rem; white-space: nowrap; }
         .nav-links li:hover, .nav-links li.active { background-color: rgba(245, 158, 11, 0.1); color: var(--accent); border-left: 4px solid var(--accent); }
+        .nav-links .icon { font-size: 1.1rem; min-width: 20px; text-align: center; }
 
         /* Main Content */
         main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 25px; }
@@ -64,7 +68,9 @@
         /* Responsive Mobile */
         @media (max-width: 768px) {
             body { flex-direction: column; height: auto; overflow: auto; }
-            aside { width: 100%; height: auto; }
+            aside { width: 100%; min-width: 100%; height: auto; }
+            aside.collapsed { width: 100%; min-width: 100%; }
+            aside.collapsed .logo-text, aside.collapsed .nav-links span:not(.icon) { display: inline; }
             .nav-links { display: flex; overflow-x: auto; padding: 10px; }
             .nav-links li { border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
             .nav-links li.active { border-left: none; border-bottom: 3px solid var(--accent); background: none; }
@@ -78,18 +84,18 @@
     <!-- Sidebar -->
     <aside id="sidebar">
         <div class="logo-area">
-            <div>
+            <div class="logo-text">
                 <h2>Pizzeria Manager</h2>
                 <p>Controllo & Chiusura</p>
             </div>
             <button class="menu-toggle" onclick="toggleSidebar()" title="Comprimi Menu">☰</button>
         </div>
         <ul class="nav-links">
-            <li class="active" onclick="switchView('dashboard', this)"><span>📊</span> Dashboard</li>
-            <li onclick="switchView('inserisci', this)"><span>➕</span> Inserisci Chiusura</li>
-            <li onclick="switchView('storico', this)"><span>📋</span> Storico Chiusure</li>
-            <li onclick="switchView('analisi', this)"><span>📈</span> Analisi & Scontrini</li>
-            <li onclick="switchView('operatore', this)"><span>👤</span> Report Operatore</li>
+            <li class="active" onclick="switchView('dashboard', this)"><span class="icon">📊</span> <span>Dashboard</span></li>
+            <li onclick="switchView('inserisci', this)"><span class="icon">➕</span> <span>Inserisci Chiusura</span></li>
+            <li onclick="switchView('storico', this)"><span class="icon">📋</span> <span>Storico Chiusure</span></li>
+            <li onclick="switchView('analisi', this)"><span class="icon">📈</span> <span>Analisi & Scontrini</span></li>
+            <li onclick="switchView('operatore', this)"><span class="icon">👤</span> <span>Report Operatore</span></li>
         </ul>
     </aside>
 
@@ -113,7 +119,7 @@
                 </div>
                 <div class="card">
                     <h3>Scontrino Fiscale</h3>
-                    <div class="value" id="dash-scontrino">-</div>
+                    <div class="value" id="dash-scontrino">0</div>
                     <div class="sub">Ultimo registrato</div>
                 </div>
                 <div class="card">
@@ -152,7 +158,7 @@
                     </div>
                     <div class="form-group">
                         <label>Scontrino Fiscale</label>
-                        <input type="text" id="scontrinoFiscale" placeholder="Es. N. 150 / Dati scontrino">
+                        <input type="text" id="scontrinoFiscale" placeholder="0 o N. 150">
                     </div>
                     <div class="form-group">
                         <label>Incasso Reale (€)</label>
@@ -268,7 +274,7 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.style.width = sidebar.style.width === '70px' ? '260px' : '70px';
+            sidebar.classList.toggle('collapsed');
         }
 
         function ricaricaPagina() {
@@ -280,7 +286,7 @@
             const nuovaChiusura = {
                 data: document.getElementById('data').value,
                 operatore: document.getElementById('operatore').value,
-                scontrinoFiscale: document.getElementById('scontrinoFiscale').value || '-',
+                scontrinoFiscale: document.getElementById('scontrinoFiscale').value || '0',
                 incassoReale: parseFloat(document.getElementById('incassoReale').value) || 0,
                 asporto: parseFloat(document.getElementById('asporto').value) || 0,
                 salifou: parseFloat(document.getElementById('salifou').value) || 0,
@@ -297,11 +303,21 @@
         }
 
         function aggiornaDashboard() {
-            if (chiusure.length === 0) return;
+            if (chiusure.length === 0) {
+                document.getElementById('dash-incasso').innerText = '€ 0,00';
+                document.getElementById('dash-operatore').innerText = 'Operatore: -';
+                document.getElementById('dash-scontrino').innerText = '0';
+                document.getElementById('dash-coperto-medio').innerText = '€ 0,00';
+                document.getElementById('dash-asporto').innerText = '€ 0,00';
+                document.getElementById('dash-salifou').innerText = '€ 0,00';
+                document.getElementById('dash-fondo').innerText = '€ 300,00';
+                document.getElementById('dash-ammanco').innerText = 'Ammanco cassa: € 0,00';
+                return;
+            }
             const ultima = chiusure[0];
             document.getElementById('dash-incasso').innerText = `€ ${ultima.incassoReale.toFixed(2)}`;
             document.getElementById('dash-operatore').innerText = `Operatore: ${ultima.operatore}`;
-            document.getElementById('dash-scontrino').innerText = ultima.scontrinoFiscale;
+            document.getElementById('dash-scontrino').innerText = ultima.scontrinoFiscale || '0';
             document.getElementById('dash-asporto').innerText = `€ ${ultima.asporto.toFixed(2)}`;
             document.getElementById('dash-salifou').innerText = `€ ${ultima.salifou.toFixed(2)}`;
             document.getElementById('dash-fondo').innerText = `€ ${ultima.fondoCassa.toFixed(2)}`;
@@ -322,7 +338,7 @@
                 return `<tr>
                     <td>${c.data}</td>
                     <td>${c.operatore}</td>
-                    <td><strong>${c.scontrinoFiscale}</strong></td>
+                    <td><strong>${c.scontrinoFiscale || '0'}</strong></td>
                     <td>€ ${c.incassoReale.toFixed(2)}</td>
                     <td>€ ${c.asporto.toFixed(2)}</td>
                     <td>${c.coperti}</td>
@@ -358,11 +374,11 @@
                 <h3 style="color: var(--accent); margin-bottom: 10px;">Operatore: ${opScelto}</h3>
                 <p class="sub">Serate chiuse: <strong>${serateOp.length}</strong></p>
                 <p class="sub">Incasso totale gestito: <strong>€ ${totaleIncassi.toFixed(2)}</strong></p>
-                <p class="sub">Ultimo scontrino registrato: <strong>${serateOp.length > 0 ? serateOp[0].scontrinoFiscale : '-'}</strong></p>
+                <p class="sub">Ultimo scontrino registrato: <strong>${serateOp.length > 0 ? (serateOp[0].scontrinoFiscale || '0') : '0'}</strong></p>
             `;
         }
 
-        if(chiusure.length > 0) aggiornaDashboard();
+        aggiornaDashboard();
     </script>
 </body>
 </html>
