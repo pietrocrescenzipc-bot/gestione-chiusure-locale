@@ -119,7 +119,7 @@
     <!-- CONTENUTO PRINCIPALE -->
     <div class="flex-1 flex flex-col min-h-screen md:ml-64">
         
-        <!-- HEADER MOBILE CON IL PULSANTE DELLE 3 LINEE -->
+        <!-- HEADER MOBILE CON IL PULSANTE DELLE 3 LINEE E WHATSAPP RAPIDO -->
         <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center sticky top-0 z-30">
             <div class="flex items-center space-x-3">
                 <button onclick="toggleMobileMenu()" class="text-amber-400 text-xl p-1 focus:outline-none">
@@ -127,8 +127,13 @@
                 </button>
                 <span class="font-bold text-white text-base" id="mobile-current-section">Dashboard</span>
             </div>
-            <div class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-bold text-xs">
-                <i class="fa-solid fa-pizza-slice"></i> Manager
+            <div class="flex items-center space-x-2">
+                <button onclick="inviaWhatsAppReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-xl font-bold text-xs flex items-center space-x-1 shadow-lg shadow-emerald-600/20 transition">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                </button>
+                <div class="bg-amber-500 text-slate-950 px-2.5 py-1.5 rounded-xl font-bold text-xs">
+                    <i class="fa-solid fa-pizza-slice"></i>
+                </div>
             </div>
         </header>
 
@@ -141,10 +146,16 @@
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Dashboard Generale</h2>
                         <p class="text-xs sm:text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave.</p>
                     </div>
-                    <button onclick="switchTab('nuova')" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Nuova Chiusura Serata</span>
-                    </button>
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button onclick="inviaWhatsAppReport()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-3 rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2 text-sm">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                            <span>Invia su WhatsApp</span>
+                        </button>
+                        <button onclick="switchTab('nuova')" class="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Nuova Chiusura</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- KPI Cards -->
@@ -612,6 +623,34 @@
                 }
             });
         });
+
+        // Funzione per inviare il report su WhatsApp al numero 3391318613
+        function inviaWhatsAppReport() {
+            if (chiusure.length === 0) {
+                alert('Nessuna chiusura registrata da inviare.');
+                return;
+            }
+            const ultima = chiusure[0];
+            const copertoMedio = ultima.coperti > 0 ? (ultima.reale - ultima.asporto) / ultima.coperti : 0;
+            const totOre = ultima.oreCucina + ultima.oreSala + ultima.oreAntonio + ultima.orePietro;
+            const costoPers = totOre * 18;
+            const puntoPareggio = costoPers * 3;
+            const profittabilita = ultima.reale >= puntoPareggio ? "Sopra Pareggio 🚀" : "Sotto il Pareggio ⚠️";
+
+            const testo = `*📊 REPORT CHIUSURA SERATA*%0A` +
+                          `📅 Data: ${ultima.data}%0A` +
+                          `👤 Operatore: ${ultima.operatore}%0A%0A` +
+                          `💰 *Incasso Reale*: € ${ultima.reale.toFixed(2)}%0A` +
+                          `🥡 *Asporto*: € ${ultima.asporto.toFixed(2)} (${ultima.asportoOrdini} ord.)%0A` +
+                          `👥 *Coperti*: ${ultima.coperti} (Medio: € ${copertoMedio.toFixed(2)})%0A` +
+                          `⏱️ *Ore Lavorate*: ${totOre} h (Costo: € ${costoPers.toFixed(2)})%0A` +
+                          `💵 *Fondo Cassa*: € ${ultima.fondoCassa.toFixed(2)} (Ammanco: € ${ultima.ammancoCassa.toFixed(2)})%0A` +
+                          `🧭 *Profittabilità*: ${profittabilita}`;
+
+            const numeroTelefono = "393391318613";
+            const url = `https://wa.me/${numeroTelefono}?text=${testo}`;
+            window.open(url, '_blank');
+        }
 
         // Gestione Pull-to-Refresh da mobile tirando giù la pagina
         function initPullToRefresh() {
