@@ -17,7 +17,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col md:flex-row">
 
-    <!-- MENU LATERALE DESKTOP (Sempre visibile su schermi grandi) -->
+    <!-- MENU LATERALE DESKTOP -->
     <aside class="w-64 bg-slate-950 border-r border-slate-800 hidden md:flex flex-col justify-between shrink-0 fixed h-screen z-40">
         <div>
             <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
@@ -64,7 +64,7 @@
         </div>
     </aside>
 
-    <!-- MENU A SCOMPARSA MOBILE (Drawer con le tre linee) -->
+    <!-- MENU A SCOMPARSA MOBILE -->
     <div id="mobile-drawer" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden md:hidden flex">
         <div class="w-72 bg-slate-950 border-r border-slate-800 flex flex-col justify-between h-full shadow-2xl">
             <div>
@@ -119,7 +119,7 @@
     <!-- CONTENUTO PRINCIPALE -->
     <div class="flex-1 flex flex-col min-h-screen md:ml-64">
         
-        <!-- HEADER MOBILE CON IL PULSANTE DELLE 3 LINEE -->
+        <!-- HEADER MOBILE -->
         <header class="bg-slate-950 border-b border-slate-800 p-4 md:hidden flex justify-between items-center sticky top-0 z-30">
             <div class="flex items-center space-x-3">
                 <button onclick="toggleMobileMenu()" class="text-amber-400 text-xl p-1 focus:outline-none">
@@ -181,9 +181,8 @@
                     </div>
                 </div>
 
-                <!-- Bussola di Profittabilità & Grafici -->
+                <!-- Bussola & Grafico -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Bussola / Tachimetro Punto di Pareggio -->
                     <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
                         <div>
                             <h3 class="font-bold text-white text-lg flex items-center space-x-2">
@@ -205,7 +204,6 @@
                         </div>
                     </div>
 
-                    <!-- Grafico Andamento Recente -->
                     <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
@@ -218,14 +216,18 @@
                 </div>
             </section>
 
-            <!-- TAB 2: NUOVA CHIUSURA -->
+            <!-- TAB 2: NUOVA / MODIFICA CHIUSURA -->
             <section id="tab-nuova" class="hidden space-y-6">
-                <div class="border-b border-slate-800 pb-4">
-                    <h2 class="text-xl sm:text-2xl font-bold text-white">Compilazione Chiusura Serata</h2>
-                    <p class="text-xs sm:text-sm text-slate-400">Inserisci i dati esatti della chiusura di stasera.</p>
+                <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 id="form-title" class="text-xl sm:text-2xl font-bold text-white">Compilazione Chiusura Serata</h2>
+                        <p class="text-xs sm:text-sm text-slate-400">Inserisci o modifica i dati esatti della chiusura.</p>
+                    </div>
+                    <button type="button" id="btn-cancel-edit" onclick="resetFormMode()" class="hidden bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs hover:bg-slate-700 transition">Annulla Modifica</button>
                 </div>
 
                 <form id="closingForm" onsubmit="saveClosing(event)" class="bg-slate-950 border border-slate-800 p-5 sm:p-8 rounded-2xl shadow-xl space-y-6">
+                    <input type="hidden" id="edit-index" value="-1">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data Serata</label>
@@ -266,7 +268,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Salifou (€) <span class="text-xs text-amber-400 font-normal">(Escluso cassa)</span></label>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Salifou (€)</label>
                             <input type="number" step="0.01" id="chiusura-salifou" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
@@ -279,14 +281,12 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-1 gap-6 pt-4 border-t border-slate-800">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa a Fine Serata (€) <span class="text-xs text-amber-400 font-normal">(Target standard: 300.00€)</span></label>
-                            <input type="number" step="0.01" id="chiusura-fondo-cassa" value="300.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
-                        </div>
+                    <div class="pt-4 border-t border-slate-800">
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa a Fine Serata (€)</label>
+                        <input type="number" step="0.01" id="chiusura-fondo-cassa" value="300.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                     </div>
 
-                    <!-- Ore del Personale -->
+                    <!-- Ore Personale -->
                     <div class="pt-4 border-t border-slate-800">
                         <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Ore Personale per Settore</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -299,11 +299,11 @@
                                 <input type="number" step="0.5" id="ore-sala" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Ore Antonio (Proprietario)</label>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Antonio</label>
                                 <input type="number" step="0.5" id="ore-antonio" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Ore Pietro (Proprietario)</label>
+                                <label class="block text-xs text-slate-400 mb-1">Ore Pietro</label>
                                 <input type="number" step="0.5" id="ore-pietro" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
@@ -317,7 +317,7 @@
                     </div>
 
                     <div class="flex justify-end pt-4">
-                        <button type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
+                        <button type="submit" id="btn-submit-form" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Salva Chiusura Serata</span>
                         </button>
@@ -325,12 +325,12 @@
                 </form>
             </section>
 
-            <!-- TAB 3: STORICO CHIUSURE -->
+            <!-- TAB 3: STORICO -->
             <section id="tab-storico" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure & Scontrini</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Tutti i dati registrati delle serate passate.</p>
+                        <p class="text-xs sm:text-sm text-slate-400">Tutti i dati registrati delle serate passate (Modificabili ed eliminabili).</p>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                         <button onclick="exportCSV()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-sm">
@@ -370,14 +370,13 @@
                 </div>
             </section>
 
-            <!-- TAB 4: ANALISI MENSILE & FILTRO TEMPORALE -->
+            <!-- TAB 4: ANALISI -->
             <section id="tab-analisi" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Analisi Periodo & Totali</h2>
                         <p class="text-xs sm:text-sm text-slate-400">Filtra per periodo e visualizza il riepilogo aggregato.</p>
                     </div>
-                    <!-- Selettore Lasso di Tempo -->
                     <div class="flex flex-wrap items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-2xl w-full sm:w-auto">
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Periodo:</span>
                         <select id="filtro-periodo" onchange="changeFiltroPeriodo()" class="bg-slate-900 border border-slate-800 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-amber-500 flex-1 sm:flex-none">
@@ -395,7 +394,6 @@
                     </div>
                 </div>
 
-                <!-- KPI Cards Analisi -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Totale Incassi Reali (Periodo)</p>
@@ -424,7 +422,6 @@
                     </div>
                 </div>
 
-                <!-- Dettaglio Ore per Settore -->
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl">
                     <h3 class="font-bold text-white text-lg mb-4 flex items-center space-x-2">
                         <i class="fa-solid fa-clock text-purple-400"></i>
@@ -451,16 +448,13 @@
                 </div>
             </section>
 
-            <!-- TAB 5: REPORT OPERATORI -->
+            <!-- TAB 5: OPERATORI -->
             <section id="tab-operatori" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl sm:text-2xl font-bold text-white">Report per Operatore</h2>
                     <p class="text-xs sm:text-sm text-slate-400">Analizza le performance e le chiusure divise per operatore.</p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="operatori-cards-container">
-                    <!-- Popolato dinamicamente -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="operatori-cards-container"></div>
             </section>
 
             <!-- TAB 6: ASSISTENTE AI -->
@@ -469,7 +463,6 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-white">Assistente AI Pizzeria</h2>
                     <p class="text-xs sm:text-sm text-slate-400">Consigli e analisi automatica basati sui tuoi dati reali.</p>
                 </div>
-
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
                     <div class="flex items-center space-x-3 pb-4 border-b border-slate-800">
                         <div class="bg-pink-500/10 text-pink-400 p-3 rounded-xl border border-pink-500/20">
@@ -552,6 +545,8 @@
 
         function saveClosing(e) {
             e.preventDefault();
+            const editIndex = parseInt(document.getElementById('edit-index').value);
+
             const newEntry = {
                 data: document.getElementById('chiusura-data').value,
                 operatore: document.getElementById('chiusura-operatore').value,
@@ -575,21 +570,62 @@
             newEntry.ammancoCassa = newEntry.incassoReale - newEntry.incassoGestionale;
             newEntry.copertoMedio = newEntry.coperti > 0 ? (newEntry.incassoReale - newEntry.asporto) / newEntry.coperti : 0;
 
-            closingsData.push(newEntry);
+            if (editIndex >= 0) {
+                // Modifica esistente
+                closingsData[editIndex] = newEntry;
+                alert('Chiusura modificata con successo!');
+            } else {
+                // Nuova inserimento
+                closingsData.push(newEntry);
+                alert('Chiusura salvata con successo!');
+            }
+
             closingsData.sort((a,b) => new Date(b.data) - new Date(a.data));
             localStorage.setItem('pizzeria_closings', JSON.stringify(closingsData));
 
-            // Collegamento webhook Make / Integration (Decommentare ed inserire l'URL)
-            // fetch('TUO_URL_WEBHOOK_MAKE', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newEntry) }).catch(err => console.log(err));
+            resetFormMode();
+            switchTab('dashboard');
+            refreshAllData();
+        }
 
+        function editClosing(index) {
+            const item = closingsData[index];
+            document.getElementById('edit-index').value = index;
+            document.getElementById('chiusura-data').value = item.data;
+            document.getElementById('chiusura-operatore').value = item.operatore;
+            document.getElementById('chiusura-scontrino').value = item.scontrinoFiscale;
+            document.getElementById('chiusura-coperti').value = item.coperti;
+            document.getElementById('chiusura-incasso-gestionale').value = item.incassoGestionale;
+            document.getElementById('chiusura-incasso-reale').value = item.incassoReale;
+            document.getElementById('chiusura-bancomat').value = item.bancomat;
+            document.getElementById('chiusura-salifou').value = item.salifou;
+            document.getElementById('chiusura-asporto').value = item.asporto;
+            document.getElementById('chiusura-asporto-ordini').value = item.asportoOrdini;
+            document.getElementById('chiusura-fondo-cassa').value = item.fondoCassa;
+            document.getElementById('ore-cucina').value = item.oreCucina;
+            document.getElementById('ore-sala').value = item.oreSala;
+            document.getElementById('ore-antonio').value = item.oreAntonio;
+            document.getElementById('ore-pietro').value = item.orePietro;
+            document.getElementById('chiusura-spese-desc').value = item.speseDesc || '';
+            document.getElementById('chiusura-spese-importo').value = item.speseImporto || '';
+
+            // Cambia titolo e mostra pulsante annulla
+            document.getElementById('form-title').innerText = "Modifica Chiusura Serata";
+            document.getElementById('btn-submit-form').querySelector('span').innerText = "Aggiorna Chiusura";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+            switchTab('nuova');
+        }
+
+        function resetFormMode() {
             document.getElementById('closingForm').reset();
+            document.getElementById('edit-index').value = -1;
+            document.getElementById('form-title').innerText = "Compilazione Chiusura Serata";
+            document.getElementById('btn-submit-form').querySelector('span').innerText = "Salva Chiusura Serata";
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('chiusura-data').value = today;
             document.getElementById('chiusura-fondo-cassa').value = "300.00";
-
-            alert('Chiusura salvata con successo!');
-            switchTab('dashboard');
-            refreshAllData();
         }
 
         function refreshAllData() {
@@ -637,7 +673,6 @@
                 ammancoLabel.className = "text-xs text-slate-500 block mt-1";
             }
 
-            // Bussola / Break-even (Ore Totali * 18 * 3)
             const oreTotali = last.oreCucina + last.oreSala + last.oreAntonio + last.orePietro;
             const targetBreakEven = (oreTotali * 18) * 3;
             document.getElementById('gauge-target').innerText = `€ ${targetBreakEven.toFixed(2)}`;
@@ -727,8 +762,11 @@
                     <td class="p-4">${diffBadge}</td>
                     <td class="p-4">${item.coperti}</td>
                     <td class="p-4 text-emerald-400">€ ${item.copertoMedio.toFixed(2)}</td>
-                    <td class="p-4">
-                        <button onclick="deleteClosing(${index})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg transition bg-rose-950/40 hover:bg-rose-950">
+                    <td class="p-4 space-x-2">
+                        <button onclick="editClosing(${index})" class="text-amber-400 hover:text-amber-300 p-1.5 rounded-lg transition bg-amber-950/40 hover:bg-amber-950" title="Modifica">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteClosing(${index})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg transition bg-rose-950/40 hover:bg-rose-950" title="Elimina">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
