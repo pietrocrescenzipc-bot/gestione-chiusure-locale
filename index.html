@@ -155,9 +155,9 @@
                         <span id="dash-operatore" class="text-xs text-amber-400 font-medium block mt-1">Operatore: -</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Scontrino (€)</p>
+                        <p class="text-xs font-medium text-slate-400">Scontrino Fiscale (€)</p>
                         <h3 id="dash-scontrino" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
-                        <span class="text-xs text-slate-500 block mt-1">Incasso / Coperti</span>
+                        <span class="text-xs text-slate-500 block mt-1">Valore scontrino</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Coperto Medio</p>
@@ -226,18 +226,22 @@
                 </div>
 
                 <form id="closingForm" onsubmit="saveClosing(event)" class="bg-slate-950 border border-slate-800 p-5 sm:p-8 rounded-2xl shadow-xl space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data Serata</label>
                             <input type="date" id="chiusura-data" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Chi ha effettuato la chiusura?</label>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Operatore</label>
                             <select id="chiusura-operatore" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                                 <option value="Antonio Crescenzi">Antonio Crescenzi</option>
                                 <option value="Pietro Crescenzi">Pietro Crescenzi</option>
                                 <option value="Alessia Palombi">Alessia Palombi</option>
                             </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Scontrino Fiscale (€)</label>
+                            <input type="number" step="0.01" id="chiusura-scontrino" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Coperti</label>
@@ -325,7 +329,7 @@
             <section id="tab-storico" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure & Scontrini</h2>
                         <p class="text-xs sm:text-sm text-slate-400">Tutti i dati registrati delle serate passate.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -347,8 +351,8 @@
                                 <tr class="bg-slate-900 border-b border-slate-800 text-slate-400">
                                     <th class="p-4">Data</th>
                                     <th class="p-4">Operatore</th>
+                                    <th class="p-4">Scontrino Fiscale</th>
                                     <th class="p-4">Inc. Reale</th>
-                                    <th class="p-4">Scontrino</th>
                                     <th class="p-4">Asporto</th>
                                     <th class="p-4">Salifou</th>
                                     <th class="p-4">Fondo Cassa</th>
@@ -493,49 +497,9 @@
 
     <!-- SCRIPT JAVASCRIPT -->
     <script>
-        // Stato dell'applicazione e dati iniziali di test se vuoti
-        let closingsData = JSON.parse(localStorage.getItem('pizzeria_closings')) || [
-            {
-                data: "2026-03-01",
-                operatore: "Antonio Crescenzi",
-                coperti: 85,
-                incassoGestionale: 1450.00,
-                incassoReale: 1420.00,
-                bancomat: 890.00,
-                salifou: 60.00,
-                asporto: 320.00,
-                asportoOrdini: 14,
-                fondoCassa: 300.00,
-                oreCucina: 12,
-                oreSala: 16,
-                oreAntonio: 6,
-                orePietro: 0,
-                speseDesc: "Pane e verdure",
-                speseImporto: 35.00
-            },
-            {
-                data: "2026-03-02",
-                operatore: "Pietro Crescenzi",
-                coperti: 64,
-                incassoGestionale: 1100.00,
-                incassoReale: 1100.00,
-                bancomat: 650.00,
-                salifou: 50.00,
-                asporto: 240.00,
-                asportoOrdini: 10,
-                fondoCassa: 300.00,
-                oreCucina: 10,
-                oreSala: 12,
-                oreAntonio: 0,
-                orePietro: 6,
-                speseDesc: "bibite extra",
-                speseImporto: 20.00
-            }
-        ];
-
+        let closingsData = JSON.parse(localStorage.getItem('pizzeria_closings')) || [];
         let trendChartInstance = null;
 
-        // Imposta la data odierna nel form di inserimento all'avvio
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             const dataInput = document.getElementById('chiusura-data');
@@ -545,7 +509,6 @@
             refreshAllData();
         });
 
-        // Navigazione tra le tab
         function switchTab(tabId) {
             const tabs = ['dashboard', 'nuova', 'storico', 'analisi', 'operatori', 'ai'];
             tabs.forEach(t => {
@@ -555,24 +518,15 @@
                 
                 if(t === tabId) {
                     if(el) el.classList.remove('hidden');
-                    if(nav) {
-                        nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
-                    }
-                    if(drawerNav) {
-                        drawerNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
-                    }
+                    if(nav) nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                    if(drawerNav) drawerNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left bg-amber-500/10 text-amber-400 border border-amber-500/20";
                 } else {
                     if(el) el.classList.add('hidden');
-                    if(nav) {
-                        nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
-                    }
-                    if(drawerNav) {
-                        drawerNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
-                    }
+                    if(nav) nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
+                    if(drawerNav) drawerNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white";
                 }
             });
 
-            // Aggiorna titolo header mobile
             const titles = {
                 dashboard: "Dashboard",
                 nuova: "Inserisci Chiusura",
@@ -584,32 +538,24 @@
             const mobileTitle = document.getElementById('mobile-current-section');
             if(mobileTitle) mobileTitle.innerText = titles[tabId] || "Dashboard";
 
-            if(tabId === 'dashboard') {
-                renderDashboard();
-            } else if(tabId === 'storico') {
-                renderStorico();
-            } else if(tabId === 'analisi') {
-                updateAnalisi();
-            } else if(tabId === 'operatori') {
-                renderOperatorReport();
-            } else if(tabId === 'ai') {
-                generateAISuggestions();
-            }
+            if(tabId === 'dashboard') renderDashboard();
+            else if(tabId === 'storico') renderStorico();
+            else if(tabId === 'analisi') updateAnalisi();
+            else if(tabId === 'operatori') renderOperatorReport();
+            else if(tabId === 'ai') generateAISuggestions();
         }
 
         function toggleMobileMenu() {
             const drawer = document.getElementById('mobile-drawer');
-            if(drawer) {
-                drawer.classList.toggle('hidden');
-            }
+            if(drawer) drawer.classList.toggle('hidden');
         }
 
-        // Funzione di salvataggio nuova chiusura
         function saveClosing(e) {
             e.preventDefault();
             const newEntry = {
                 data: document.getElementById('chiusura-data').value,
                 operatore: document.getElementById('chiusura-operatore').value,
+                scontrinoFiscale: parseFloat(document.getElementById('chiusura-scontrino').value) || 0,
                 coperti: parseInt(document.getElementById('chiusura-coperti').value) || 0,
                 incassoGestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
                 incassoReale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
@@ -626,10 +572,15 @@
                 speseImporto: parseFloat(document.getElementById('chiusura-spese-importo').value) || 0
             };
 
+            newEntry.ammancoCassa = newEntry.incassoReale - newEntry.incassoGestionale;
+            newEntry.copertoMedio = newEntry.coperti > 0 ? (newEntry.incassoReale - newEntry.asporto) / newEntry.coperti : 0;
+
             closingsData.push(newEntry);
-            // Ordina per data decrescente
             closingsData.sort((a,b) => new Date(b.data) - new Date(a.data));
             localStorage.setItem('pizzeria_closings', JSON.stringify(closingsData));
+
+            // Collegamento webhook Make / Integration (Decommentare ed inserire l'URL)
+            // fetch('TUO_URL_WEBHOOK_MAKE', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newEntry) }).catch(err => console.log(err));
 
             document.getElementById('closingForm').reset();
             const today = new Date().toISOString().split('T')[0];
@@ -647,30 +598,30 @@
             updateAnalisi();
         }
 
-        // Render Dashboard
         function renderDashboard() {
-            if(closingsData.length === 0) return;
-            const last = closingsData[0]; // Più recente
+            if(closingsData.length === 0) {
+                document.getElementById('dash-incasso-reale').innerText = '€ 0,00';
+                document.getElementById('dash-operatore').innerText = 'Operatore: -';
+                document.getElementById('dash-scontrino').innerText = '€ 0,00';
+                document.getElementById('dash-coperto-medio').innerText = '€ 0,00';
+                document.getElementById('dash-asporto').innerText = '€ 0,00';
+                document.getElementById('dash-salifou').innerText = '€ 0,00';
+                document.getElementById('dash-fondo-cassa').innerText = '€ 300,00';
+                document.getElementById('gauge-target').innerText = '€ 0,00';
+                return;
+            }
+            const last = closingsData[0];
 
             document.getElementById('dash-incasso-reale').innerText = `€ ${last.incassoReale.toFixed(2)}`;
             document.getElementById('dash-operatore').innerText = `Operatore: ${last.operatore}`;
-
-            // Scontrino (€) = Incasso / Coperti
-            const scontrino = last.coperti > 0 ? (last.incassoReale / last.coperti) : 0;
-            const dashScontrinoEl = document.getElementById('dash-scontrino');
-            if(dashScontrinoEl) dashScontrinoEl.innerText = `€ ${scontrino.toFixed(2)}`;
-
-            // Coperto Medio = (Incassi - Asporto) / Coperti
-            const incassoSenzaAsporto = last.incassoReale - last.asporto;
-            const copertoMedio = last.coperti > 0 ? (incassoSenzaAsporto / last.coperti) : 0;
-            document.getElementById('dash-coperto-medio').innerText = `€ ${copertoMedio.toFixed(2)}`;
-
+            document.getElementById('dash-scontrino').innerText = `€ ${last.scontrinoFiscale.toFixed(2)}`;
+            document.getElementById('dash-coperto-medio').innerText = `€ ${last.copertoMedio.toFixed(2)}`;
             document.getElementById('dash-asporto').innerText = `€ ${last.asporto.toFixed(2)}`;
             document.getElementById('dash-asporto-ordini').innerText = `${last.asportoOrdini} ordini effettuati`;
-
             document.getElementById('dash-salifou').innerText = `€ ${last.salifou.toFixed(2)}`;
+            
             const salifouPerc = last.incassoReale > 0 ? ((last.salifou / last.incassoReale) * 100).toFixed(1) : 0;
-            document.getElementById('dash-salifou-perc',).innerText = `${salifouPerc}% dell'incasso`;
+            document.getElementById('dash-salifou-perc').innerText = `${salifouPerc}% dell'incasso`;
 
             document.getElementById('dash-fondo-cassa').innerText = `€ ${last.fondoCassa.toFixed(2)}`;
             const diffCassa = last.fondoCassa - 300.00;
@@ -686,7 +637,7 @@
                 ammancoLabel.className = "text-xs text-slate-500 block mt-1";
             }
 
-            // Bussola / Break-even
+            // Bussola / Break-even (Ore Totali * 18 * 3)
             const oreTotali = last.oreCucina + last.oreSala + last.oreAntonio + last.orePietro;
             const targetBreakEven = (oreTotali * 18) * 3;
             document.getElementById('gauge-target').innerText = `€ ${targetBreakEven.toFixed(2)}`;
@@ -701,12 +652,12 @@
                     gaugeStatus.innerText = "Serata in Profitto! 🚀";
                     gaugeStatus.className = "text-xl font-bold text-emerald-400 mt-4";
                     gaugeDesc.innerText = `Superato il punto di pareggio del ${((ratio - 1)*100).toFixed(1)}%.`;
-                    gaugeCircle.style.borderColor = "#34d399";
+                    if(gaugeCircle) gaugeCircle.style.borderColor = "#34d399";
                 } else {
                     gaugeStatus.innerText = "Sotto il Pareggio ⚠️";
                     gaugeStatus.className = "text-xl font-bold text-rose-400 mt-4";
                     gaugeDesc.innerText = `Mancano € ${(targetBreakEven - last.incassoReale).toFixed(2)} al break-even.`;
-                    gaugeCircle.style.borderColor = "#fb7185";
+                    if(gaugeCircle) gaugeCircle.style.borderColor = "#fb7185";
                 }
             } else {
                 gaugeStatus.innerText = "Ore non registrate";
@@ -716,47 +667,29 @@
             renderTrendChart();
         }
 
-        // Grafico Chart.js Trend
         function renderTrendChart() {
             const ctx = document.getElementById('trendChart').getContext('2d');
-            const recent = [...closingsData].reverse().slice(-7); // Ultime 7 serate
+            const recent = [...closingsData].reverse().slice(-7);
 
             const labels = recent.map(item => item.data);
             const reali = recent.map(item => item.incassoReale);
             const gestionali = recent.map(item => item.incassoGestionale);
 
-            if(trendChartInstance) {
-                trendChartInstance.destroy();
-            }
+            if(trendChartInstance) trendChartInstance.destroy();
 
             trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            label: 'Incasso Reale (€)',
-                            data: reali,
-                            borderColor: '#fbbf24',
-                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Incasso Gestionale (€)',
-                            data: gestionali,
-                            borderColor: '#38bdf8',
-                            borderDash: [5, 5],
-                            tension: 0.3
-                        }
+                        { label: 'Incasso Reale (€)', data: reali, borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Incasso Gestionale (€)', data: gestionali, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } }
-                    },
+                    plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } } },
                     scales: {
                         x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
                         y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
@@ -765,7 +698,6 @@
             });
         }
 
-        // Render Storico Table
         function renderStorico() {
             const tbody = document.getElementById('storico-table-body');
             if(!tbody) return;
@@ -777,31 +709,24 @@
             }
 
             closingsData.forEach((item, index) => {
-                const scontrino = item.coperti > 0 ? (item.incassoReale / item.coperti) : 0;
-                const incassoSenzaAsporto = item.incassoReale - item.asporto;
-                const copertoMedio = item.coperti > 0 ? (incassoSenzaAsporto / item.coperti) : 0;
                 const diffCassa = item.fondoCassa - 300.00;
-                
                 let diffBadge = `<span class="text-slate-400">€ 0,00</span>`;
-                if(diffCassa < 0) {
-                    diffBadge = `<span class="text-rose-400 font-semibold">-€ ${Math.abs(diffCassa).toFixed(2)}</span>`;
-                } else if(diffCassa > 0) {
-                    diffBadge = `<span class="text-emerald-400 font-semibold">+€ ${diffCassa.toFixed(2)}</span>`;
-                }
+                if(diffCassa < 0) diffBadge = `<span class="text-rose-400 font-semibold">-€ ${Math.abs(diffCassa).toFixed(2)}</span>`;
+                else if(diffCassa > 0) diffBadge = `<span class="text-emerald-400 font-semibold">+€ ${diffCassa.toFixed(2)}</span>`;
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-900/60 transition border-b border-slate-800/40";
                 tr.innerHTML = `
                     <td class="p-4 font-medium text-white">${item.data}</td>
                     <td class="p-4 text-amber-400">${item.operatore}</td>
+                    <td class="p-4 font-bold text-amber-300">€ ${item.scontrinoFiscale.toFixed(2)}</td>
                     <td class="p-4 font-bold text-white">€ ${item.incassoReale.toFixed(2)}</td>
-                    <td class="p-4 text-amber-400 font-medium">€ ${scontrino.toFixed(2)}</td>
                     <td class="p-4 text-blue-400">€ ${item.asporto.toFixed(2)}</td>
                     <td class="p-4 text-pink-400">€ ${item.salifou.toFixed(2)}</td>
                     <td class="p-4">€ ${item.fondoCassa.toFixed(2)}</td>
                     <td class="p-4">${diffBadge}</td>
                     <td class="p-4">${item.coperti}</td>
-                    <td class="p-4 text-emerald-400">€ ${copertoMedio.toFixed(2)}</td>
+                    <td class="p-4 text-emerald-400">€ ${item.copertoMedio.toFixed(2)}</td>
                     <td class="p-4">
                         <button onclick="deleteClosing(${index})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg transition bg-rose-950/40 hover:bg-rose-950">
                             <i class="fa-solid fa-trash-can"></i>
@@ -820,13 +745,11 @@
             }
         }
 
-        // Filtri Analisi & Periodo
         function changeFiltroPeriodo() {
             const val = document.getElementById('filtro-periodo').value;
             const customBox = document.getElementById('box-date-custom');
-            if(val === 'personalizzato') {
-                customBox.classList.remove('hidden');
-            } else {
+            if(val === 'personalizzato') customBox.classList.remove('hidden');
+            else {
                 customBox.classList.add('hidden');
                 updateAnalisi();
             }
@@ -858,21 +781,11 @@
             } else if(periodo === 'personalizzato') {
                 const dStart = document.getElementById('data-inizio').value;
                 const dEnd = document.getElementById('data-fine').value;
-                if(dStart && dEnd) {
-                    filtered = closingsData.filter(i => i.data >= dStart && i.data <= dEnd);
-                }
+                if(dStart && dEnd) filtered = closingsData.filter(i => i.data >= dStart && i.data <= dEnd);
             }
 
-            // Calcoli aggregati
-            let totIncassi = 0;
-            let totAsporto = 0;
-            let totOrdiniAsporto = 0;
-            let totDiffCassa = 0;
-            let oreCucina = 0;
-            let oreSala = 0;
-            let oreAntonio = 0;
-            let orePietro = 0;
-            let totCoperti = 0;
+            let totIncassi = 0, totAsporto = 0, totOrdiniAsporto = 0, totDiffCassa = 0;
+            let oreCucina = 0, oreSala = 0, oreAntonio = 0, orePietro = 0, totCoperti = 0;
 
             filtered.forEach(item => {
                 totIncassi += item.incassoReale;
@@ -887,14 +800,12 @@
             });
 
             const oreTotaliPeriodo = oreCucina + oreSala + oreAntonio + orePietro;
-            // Costo personale stimato (€18/h)
             const spesaPersonale = oreTotaliPeriodo * 18;
             const scontrinoMedioPeriodo = totCoperti > 0 ? (totIncassi / totCoperti) : 0;
 
             document.getElementById('analisi-incassi').innerText = `€ ${totIncassi.toFixed(2)}`;
             document.getElementById('analisi-serate-count').innerText = `${filtered.length} serate registrate`;
-            const analisiScontrinoEl = document.getElementById('analisi-scontrino-medio');
-            if(analisiScontrinoEl) analisiScontrinoEl.innerText = `€ ${scontrinoMedioPeriodo.toFixed(2)}`;
+            document.getElementById('analisi-scontrino-medio').innerText = `€ ${scontrinoMedioPeriodo.toFixed(2)}`;
             document.getElementById('analisi-personale').innerText = `€ ${spesaPersonale.toFixed(2)}`;
             document.getElementById('analisi-ore-totali').innerText = `${oreTotaliPeriodo} ore totali`;
             document.getElementById('analisi-asporto').innerText = `€ ${totAsporto.toFixed(2)}`;
@@ -902,9 +813,7 @@
 
             const diffEl = document.getElementById('analisi-diff-cassa');
             diffEl.innerText = `€ ${totDiffCassa.toFixed(2)}`;
-            if(totDiffCassa < 0) diffEl.className = "text-2xl font-bold mt-2 text-rose-400";
-            else if(totDiffCassa > 0) diffEl.className = "text-2xl font-bold mt-2 text-emerald-400";
-            else diffEl.className = "text-2xl font-bold mt-2 text-white";
+            diffEl.className = totDiffCassa < 0 ? "text-2xl font-bold mt-2 text-rose-400" : totDiffCassa > 0 ? "text-2xl font-bold mt-2 text-emerald-400" : "text-2xl font-bold mt-2 text-white";
 
             document.getElementById('ore-cucina-tot').innerText = `${oreCucina} h`;
             document.getElementById('ore-sala-tot').innerText = `${oreSala} h`;
@@ -912,7 +821,6 @@
             document.getElementById('ore-pietro-tot').innerText = `${orePietro} h`;
         }
 
-        // Report per Operatore
         function renderOperatorReport() {
             const container = document.getElementById('operatori-cards-container');
             if(!container) return;
@@ -922,9 +830,7 @@
 
             operatori.forEach(op => {
                 const opSerate = closingsData.filter(i => i.operatore === op);
-                let incassoTot = 0;
-                let copertiTot = 0;
-                let asportoTot = 0;
+                let incassoTot = 0, copertiTot = 0, asportoTot = 0;
 
                 opSerate.forEach(s => {
                     incassoTot += s.incassoReale;
@@ -970,21 +876,16 @@
             });
         }
 
-        // Generazione Suggerimenti AI
         function generateAISuggestions() {
             const contentBox = document.getElementById('ai-suggestion-content');
             if(!contentBox) return;
 
             if(closingsData.length === 0) {
-                contentBox.innerHTML = `<p>Non ci abbastanza dati registrati per generare un'analisi intelligente.</p>`;
+                contentBox.innerHTML = `<p>Non ci sono abbastanza dati registrati per generare un'analisi intelligente.</p>`;
                 return;
             }
 
-            let totalIncassi = 0;
-            let totalCoperti = 0;
-            let totalAsporto = 0;
-            let ammoCount = 0;
-
+            let totalIncassi = 0, totalCoperti = 0, totalAsporto = 0, ammoCount = 0;
             closingsData.forEach(i => {
                 totalIncassi += i.incassoReale;
                 totalCoperti += i.coperti;
@@ -997,22 +898,18 @@
             const asportoRatio = totalIncassi > 0 ? ((totalAsporto / totalIncassi) * 100).toFixed(1) : 0;
 
             contentBox.innerHTML = `
-                <p>💡 <strong>Panoramica Andamento:</strong> Nelle ultime <strong>${closingsData.length} serate</strong> monitorate, la pizzeria sta registrando un incasso medio di <strong>€ ${avgIncasso.toFixed(2)}</strong> per serata con una media di <strong>${avgCoperti.toFixed(0)} coperti</strong>.</p>
-                <p>🍕 <strong>Canale Asporto:</strong> L'asporto rappresenta il <strong>${asportoRatio}%</strong> del fatturato totale. Un dato solido che conferma l'efficacia del servizio d'asporto parallelo alla sala.</p>
-                <p>🔍 <strong>Controllo Cassa:</strong> Sono stati rilevati ${ammoCount} episodi di scostamento o fondo cassa inferiore al target di 300.00€. Si consiglia di prestare attenzione ai resti durante le serate più affollate.</p>
-                <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Continuate a monitorare con precisione le ore del personale in cucina e sala per mantenere il punto di pareggio sempre sotto controllo!</p>
+                <p>💡 <strong>Panoramica Andamento:</strong> Nelle ultime <strong>${closingsData.length} serate</strong> monitorate a Marsciano, la pizzeria sta registrando un incasso medio di <strong>€ ${avgIncasso.toFixed(2)}</strong> per serata con una media di <strong>${avgCoperti.toFixed(0)} coperti</strong>.</p>
+                <p>🍕 <strong>Canale Asporto:</strong> L'asporto rappresenta il <strong>${asportoRatio}%</strong> del fatturato totale.</p>
+                <p>🔍 <strong>Controllo Cassa:</strong> Rilevati ${ammoCount} scostamenti dal fondo cassa target di 300.00€.</p>
+                <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Continuate a monitorare le ore del personale per mantenere il punto di pareggio ottimale!</p>
             `;
         }
 
         function exportCSV() {
-            if(closingsData.length === 0) {
-                alert('Nessun dato da esportare.');
-                return;
-            }
-
-            let csv = 'Data,Operatore,Coperti,Incasso Gestionale,Incasso Reale,Bancomat,Salifou,Asporto,Ordini Asporto,Fondo Cassa,Ore Cucina,Ore Sala,Ore Antonio,Ore Pietro,Spese Desc,Spese Importo\n';
+            if(closingsData.length === 0) { alert('Nessun dato da esportare.'); return; }
+            let csv = 'Data,Operatore,ScontrinoFiscale,Coperti,IncassoGestionale,IncassoReale,Bancomat,Salifou,Asporto,OrdiniAsporto,FondoCassa,OreCucina,OreSala,OreAntonio,OrePietro,SpeseDesc,SpeseImporto\n';
             closingsData.forEach(i => {
-                csv += `"${i.data}","${i.operatore}",${i.coperti},${i.incassoGestionale},${i.incassoReale},${i.bancomat},${i.salifou},${i.asporto},${i.asportoOrdini},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro},"${i.speseDesc}",${i.speseImporto}\n`;
+                csv += `"${i.data}","${i.operatore}",${i.scontrinoFiscale},${i.coperti},${i.incassoGestionale},${i.incassoReale},${i.bancomat},${i.salifou},${i.asporto},${i.asportoOrdini},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro},"${i.speseDesc}",${i.speseImporto}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
