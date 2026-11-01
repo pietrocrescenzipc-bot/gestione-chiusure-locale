@@ -151,6 +151,36 @@
                     </button>
                 </div>
 
+                <!-- BUSSOLA IN ALTO CON VALORI IN EVIDENZA -->
+                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="space-y-2">
+                        <h3 class="font-bold text-white text-lg flex items-center space-x-2">
+                            <i class="fa-solid fa-compass text-amber-400"></i>
+                            <span>Bussola & Punto di Pareggio</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Break-Even ultima serata: (Ore Totali × 18) × 3</p>
+                        <div class="pt-2 flex flex-col space-y-1 text-xs">
+                            <div class="flex justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                <span class="text-slate-400">Incasso Reale Ultima Serata:</span>
+                                <span id="gauge-actual-val" class="font-bold text-white">€ 0,00</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                <span class="text-slate-400">Punto di Pareggio (Target):</span>
+                                <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center my-2">
+                        <div id="gauge-container" class="relative w-48 h-24 mx-auto overflow-hidden">
+                            <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-left space-y-1">
+                        <h4 id="gauge-status" class="text-xl font-bold text-white">In attesa di dati</h4>
+                        <p id="gauge-desc" class="text-xs text-slate-400">Inserisci la chiusura per valutare la performance della serata.</p>
+                    </div>
+                </div>
+
                 <!-- KPI Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
@@ -185,37 +215,14 @@
                     </div>
                 </div>
 
-                <!-- Bussola & Grafico -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-white text-lg flex items-center space-x-2">
-                                <i class="fa-solid fa-compass text-amber-400"></i>
-                                <span>Bussola & Punto di Pareggio</span>
-                            </h3>
-                            <p class="text-xs text-slate-400 mt-1">Break-Even: (Ore Totali × 18) × 3</p>
-                        </div>
-                        <div class="my-6 text-center">
-                            <div id="gauge-container" class="relative w-48 h-24 mx-auto overflow-hidden">
-                                <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
-                            </div>
-                            <h4 id="gauge-status" class="text-xl font-bold text-white mt-4">In attesa di dati</h4>
-                            <p id="gauge-desc" class="text-xs text-slate-400 mt-1">Inserisci la chiusura per valutare la serata.</p>
-                        </div>
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
-                            <span class="text-slate-400">Punto di Pareggio (Target):</span>
-                            <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
-                        </div>
+                <!-- Grafico Andamento Recente -->
+                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
+                        <span class="text-xs text-slate-400">Ultime serate</span>
                     </div>
-
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-white text-lg">Andamento Incassi Reali vs Gestionale</h3>
-                            <span class="text-xs text-slate-400">Ultime serate</span>
-                        </div>
-                        <div class="h-64 relative">
-                            <canvas id="trendChart"></canvas>
-                        </div>
+                    <div class="h-72 relative">
+                        <canvas id="trendChart"></canvas>
                     </div>
                 </div>
             </section>
@@ -313,7 +320,7 @@
                         </div>
                     </div>
 
-                    <!-- Spese Varie (Aggiornato con scelta Scontrino / Fattura) -->
+                    <!-- Spese Varie -->
                     <div class="pt-4 border-t border-slate-800">
                         <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Spese Varie / Prelievi cassa</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -390,7 +397,7 @@
                 </div>
             </section>
 
-            <!-- TAB 4: ANALISI -->
+            <!-- TAB 4: ANALISI (AGGIUNTA BUSSOLA E GRAFICO PERIODO) -->
             <section id="tab-analisi" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
@@ -439,6 +446,40 @@
                         <p class="text-xs font-medium text-slate-400">Differenza Cassa (Reale - Gestionale)</p>
                         <h3 id="analisi-diff-cassa" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
                         <span class="text-xs text-slate-500 block mt-1">Somma scostamenti</span>
+                    </div>
+                </div>
+
+                <!-- Bussola & Grafico per il Periodo Selezionato -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-white text-lg flex items-center space-x-2">
+                                <i class="fa-solid fa-compass text-amber-400"></i>
+                                <span>Bussola Periodo</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Media Incasso Reale vs Target Break-Even</p>
+                        </div>
+                        <div class="my-6 text-center">
+                            <div class="relative w-48 h-24 mx-auto overflow-hidden">
+                                <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="analysis-gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+                            </div>
+                            <h4 id="analysis-gauge-status" class="text-xl font-bold text-white mt-4">In attesa</h4>
+                            <p id="analysis-gauge-desc" class="text-xs text-slate-400 mt-1">Seleziona un periodo valido.</p>
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
+                            <span class="text-slate-400">Media Target Periodo:</span>
+                            <span id="analysis-gauge-target" class="font-bold text-amber-400">€ 0,00</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-white text-lg">Andamento Incassi nel Periodo</h3>
+                            <span class="text-xs text-slate-400">Grafico filtrato</span>
+                        </div>
+                        <div class="h-64 relative">
+                            <canvas id="analysisChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -516,6 +557,7 @@
 
         let closingsData = [];
         let trendChartInstance = null;
+        let analysisChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
@@ -680,6 +722,7 @@
                 document.getElementById('dash-salifou').innerText = '€ 0,00';
                 document.getElementById('dash-fondo-cassa').innerText = '€ 300,00';
                 document.getElementById('gauge-target').innerText = '€ 0,00';
+                document.getElementById('gauge-actual-val').innerText = '€ 0,00';
                 return;
             }
             const last = closingsData[0];
@@ -712,6 +755,7 @@
             const oreTotali = last.oreCucina + last.oreSala + last.oreAntonio + last.orePietro;
             const targetBreakEven = (oreTotali * 18) * 3;
             document.getElementById('gauge-target').innerText = `€ ${targetBreakEven.toFixed(2)}`;
+            document.getElementById('gauge-actual-val').innerText = `€ ${last.incassoReale.toFixed(2)}`;
 
             const gaugeStatus = document.getElementById('gauge-status');
             const gaugeDesc = document.getElementById('gauge-desc');
@@ -721,12 +765,12 @@
                 const ratio = last.incassoReale / targetBreakEven;
                 if(ratio >= 1) {
                     gaugeStatus.innerText = "Serata in Profitto! 🚀";
-                    gaugeStatus.className = "text-xl font-bold text-emerald-400 mt-4";
+                    gaugeStatus.className = "text-xl font-bold text-emerald-400";
                     gaugeDesc.innerText = `Superato il punto di pareggio del ${((ratio - 1)*100).toFixed(1)}%.`;
                     if(gaugeCircle) gaugeCircle.style.borderColor = "#34d399";
                 } else {
                     gaugeStatus.innerText = "Sotto il Pareggio ⚠️";
-                    gaugeStatus.className = "text-xl font-bold text-rose-400 mt-4";
+                    gaugeStatus.className = "text-xl font-bold text-rose-400";
                     gaugeDesc.innerText = `Mancano € ${(targetBreakEven - last.incassoReale).toFixed(2)} al break-even.`;
                     if(gaugeCircle) gaugeCircle.style.borderColor = "#fb7185";
                 }
@@ -864,6 +908,7 @@
 
             let totIncassi = 0, totAsporto = 0, totOrdiniAsporto = 0, totDiffCassa = 0;
             let oreCucina = 0, oreSala = 0, oreAntonio = 0, orePietro = 0, totCoperti = 0;
+            let totOrePeriodo = 0;
 
             filtered.forEach(item => {
                 totIncassi += item.incassoReale;
@@ -875,6 +920,7 @@
                 oreAntonio += item.oreAntonio;
                 orePietro += item.orePietro;
                 totCoperti += item.coperti;
+                totOrePeriodo += (item.oreCucina + item.oreSala + item.oreAntonio + item.orePietro);
             });
 
             const oreTotaliPeriodo = oreCucina + oreSala + oreAntonio + orePietro;
@@ -897,6 +943,66 @@
             document.getElementById('ore-sala-tot').innerText = `${oreSala} h`;
             document.getElementById('ore-antonio-tot').innerText = `${oreAntonio} h`;
             document.getElementById('ore-pietro-tot').innerText = `${orePietro} h`;
+
+            // Aggiorna Bussola Analisi & Grafico Periodo
+            const avgTargetPeriodo = filtered.length > 0 ? ((totOrePeriodo * 18) * 3) / filtered.length : 0;
+            const avgIncassoPeriodo = filtered.length > 0 ? totIncassi / filtered.length : 0;
+            document.getElementById('analysis-gauge-target').innerText = `€ ${avgTargetPeriodo.toFixed(2)} (media serata)`;
+
+            const anStatus = document.getElementById('analysis-gauge-status');
+            const anDesc = document.getElementById('analysis-gauge-desc');
+            const anCircle = document.getElementById('analysis-gauge-circle');
+
+            if(filtered.length > 0 && avgTargetPeriodo > 0) {
+                const ratio = avgIncassoPeriodo / avgTargetPeriodo;
+                if(ratio >= 1) {
+                    anStatus.innerText = "Periodo in Profitto 🚀";
+                    anStatus.className = "text-xl font-bold text-emerald-400 mt-4";
+                    anDesc.innerText = `Media incassi superiore al target del ${((ratio - 1)*100).toFixed(1)}%.`;
+                    if(anCircle) anCircle.style.borderColor = "#34d399";
+                } else {
+                    anStatus.innerText = "Sotto Media Target ⚠️";
+                    anStatus.className = "text-xl font-bold text-rose-400 mt-4";
+                    anDesc.innerText = `Media sotto il break-even di € ${(avgTargetPeriodo - avgIncassoPeriodo).toFixed(2)}.`;
+                    if(anCircle) anCircle.style.borderColor = "#fb7185";
+                }
+            } else {
+                anStatus.innerText = "Dati insufficienti";
+                anDesc.innerText = "Nessuna chiusura trovata nel periodo.";
+            }
+
+            renderAnalysisChart(filtered);
+        }
+
+        function renderAnalysisChart(filteredData) {
+            const ctx = document.getElementById('analysisChart').getContext('2d');
+            const sorted = [...filteredData].reverse();
+
+            const labels = sorted.map(i => i.data);
+            const reali = sorted.map(i => i.incassoReale);
+            const gestionali = sorted.map(i => i.incassoGestionale);
+
+            if(analysisChartInstance) analysisChartInstance.destroy();
+
+            analysisChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Incasso Reale (€)', data: reali, borderColor: '#34d399', backgroundColor: 'rgba(52, 211, 153, 0.1)', fill: true, tension: 0.3 },
+                        { label: 'Incasso Gestionale (€)', data: gestionali, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+                        y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } }
+                    }
+                }
+            });
         }
 
         function renderOperatorReport() {
