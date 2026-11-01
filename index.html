@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js per i grafici -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDK per la sincronizzazione in tempo reale (derivato dalla Tombola) -->
+    <!-- Firebase SDK per la sincronizzazione in tempo reale -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
@@ -143,7 +143,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Dashboard Generale</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave (Sincronizzati Live).</p>
+                        <p class="text-xs sm:text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave.</p>
                     </div>
                     <button onclick="switchTab('nuova')" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-plus"></i>
@@ -313,11 +313,26 @@
                         </div>
                     </div>
 
-                    <!-- Spese Varie -->
+                    <!-- Spese Varie (Aggiornato con scelta Scontrino / Fattura) -->
                     <div class="pt-4 border-t border-slate-800">
-                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Spese Varie / Prelievi cassa (€)</label>
-                        <input type="text" id="chiusura-spese-desc" placeholder="Descrizione spese (es. Spesa €25, Pane €10)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 mb-2">
-                        <input type="number" step="0.01" id="chiusura-spese-importo" placeholder="Importo totale spese (€)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Spese Varie / Prelievi cassa</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs text-slate-400 mb-1">Descrizione Spesa</label>
+                                <input type="text" id="chiusura-spese-desc" placeholder="es. Spesa €25, Pane €10" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Tipo Documento</label>
+                                <select id="chiusura-spese-tipo" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                                    <option value="Scontrino">Scontrino</option>
+                                    <option value="Fattura">Fattura</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-xs text-slate-400 mb-1">Importo Totale Spese (€)</label>
+                            <input type="number" step="0.01" id="chiusura-spese-importo" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                        </div>
                     </div>
 
                     <div class="flex justify-end pt-4">
@@ -333,7 +348,7 @@
             <section id="tab-storico" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure & Scontrini</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure & Spese Tracciate</h2>
                         <p class="text-xs sm:text-sm text-slate-400">Archivio cloud condiviso in tempo reale.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -358,7 +373,8 @@
                                     <th class="p-4">Scontrino Fiscale</th>
                                     <th class="p-4">Inc. Reale</th>
                                     <th class="p-4">Asporto</th>
-                                    <th class="p-4">Salifou</th>
+                                    <th class="p-4">Spesa Tracciata</th>
+                                    <th class="p-4">Tipo Doc.</th>
                                     <th class="p-4">Fondo Cassa</th>
                                     <th class="p-4">Ammanco Cassa</th>
                                     <th class="p-4">Coperti</th>
@@ -492,9 +508,8 @@
         </main>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT CON CONNESSIONE FIREBASE REALTIME -->
+    <!-- SCRIPT JAVASCRIPT -->
     <script>
-        // Configurazione Firebase condivisa (stessa della Tombola per garantire la sincronizzazione live)
         const firebaseConfig = { databaseURL: "https://tombola-galleon-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -510,11 +525,9 @@
             }
         });
 
-        // Ascolto in tempo reale dei dati dal database Firebase
         db.ref('pizzeria_closings').on('value', snapshot => {
             const data = snapshot.val();
             if (data) {
-                // Converte l'oggetto Firebase in array e ordina per data decrescente
                 closingsData = Object.keys(data).map(key => ({
                     firebaseId: key,
                     ...data[key]
@@ -588,6 +601,7 @@
                 oreAntonio: parseFloat(document.getElementById('ore-antonio').value) || 0,
                 orePietro: parseFloat(document.getElementById('ore-pietro').value) || 0,
                 speseDesc: document.getElementById('chiusura-spese-desc').value,
+                speseTipo: document.getElementById('chiusura-spese-tipo').value,
                 speseImporto: parseFloat(document.getElementById('chiusura-spese-importo').value) || 0
             };
 
@@ -595,14 +609,12 @@
             newEntry.copertoMedio = newEntry.coperti > 0 ? (newEntry.incassoReale - newEntry.asporto) / newEntry.coperti : 0;
 
             if (editId) {
-                // Aggiorna sul cloud Firebase
                 db.ref('pizzeria_closings/' + editId).set(newEntry).then(() => {
-                    alert('Chiusura modificata e sincronizzata online con successo!');
+                    alert('Chiusura modificata e tracciata online con successo!');
                 });
             } else {
-                // Crea nuovo record sul cloud Firebase
                 db.ref('pizzeria_closings').push(newEntry).then(() => {
-                    alert('Chiusura salvata e sincronizzata online in tempo reale!');
+                    alert('Chiusura salvata e tracciata online in tempo reale!');
                 });
             }
 
@@ -631,6 +643,7 @@
             document.getElementById('ore-antonio').value = item.oreAntonio;
             document.getElementById('ore-pietro').value = item.orePietro;
             document.getElementById('chiusura-spese-desc').value = item.speseDesc || '';
+            document.getElementById('chiusura-spese-tipo').value = item.speseTipo || 'Scontrino';
             document.getElementById('chiusura-spese-importo').value = item.speseImporto || '';
 
             document.getElementById('form-title').innerText = "Modifica Chiusura Serata";
@@ -762,7 +775,7 @@
             tbody.innerHTML = '';
 
             if(closingsData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-500">Nessuna chiusura registrata online.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="p-6 text-center text-slate-500">Nessuna chiusura registrata online.</td></tr>`;
                 return;
             }
 
@@ -772,6 +785,9 @@
                 if(diffCassa < 0) diffBadge = `<span class="text-rose-400 font-semibold">-€ ${Math.abs(diffCassa).toFixed(2)}</span>`;
                 else if(diffCassa > 0) diffBadge = `<span class="text-emerald-400 font-semibold">+€ ${diffCassa.toFixed(2)}</span>`;
 
+                const spesaText = item.speseImporto > 0 ? `€ ${item.speseImporto.toFixed(2)} (${item.speseDesc || 'Spesa'})` : `<span class="text-slate-500">Nessuna</span>`;
+                const spesaTipoBadge = item.speseImporto > 0 ? `<span class="px-2 py-1 rounded-md text-xs font-semibold ${item.speseTipo === 'Fattura' ? 'bg-purple-950 text-purple-400 border border-purple-800' : 'bg-blue-950 text-blue-400 border border-blue-800'}">${item.speseTipo || 'Scontrino'}</span>` : `-`;
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-900/60 transition border-b border-slate-800/40";
                 tr.innerHTML = `
@@ -780,7 +796,8 @@
                     <td class="p-4 font-bold text-amber-300">€ ${item.scontrinoFiscale.toFixed(2)}</td>
                     <td class="p-4 font-bold text-white">€ ${item.incassoReale.toFixed(2)}</td>
                     <td class="p-4 text-blue-400">€ ${item.asporto.toFixed(2)}</td>
-                    <td class="p-4 text-pink-400">€ ${item.salifou.toFixed(2)}</td>
+                    <td class="p-4 text-slate-200">${spesaText}</td>
+                    <td class="p-4">${spesaTipoBadge}</td>
                     <td class="p-4">€ ${item.fondoCassa.toFixed(2)}</td>
                     <td class="p-4">${diffBadge}</td>
                     <td class="p-4">${item.coperti}</td>
@@ -968,9 +985,9 @@
 
         function exportCSV() {
             if(closingsData.length === 0) { alert('Nessun dato da esportare.'); return; }
-            let csv = 'Data,Operatore,ScontrinoFiscale,Coperti,IncassoGestionale,IncassoReale,Bancomat,Salifou,Asporto,OrdiniAsporto,FondoCassa,OreCucina,OreSala,OreAntonio,OrePietro,SpeseDesc,SpeseImporto\n';
+            let csv = 'Data,Operatore,ScontrinoFiscale,Coperti,IncassoGestionale,IncassoReale,Bancomat,Salifou,Asporto,OrdiniAsporto,SpeseDesc,SpeseTipo,SpeseImporto,FondoCassa,OreCucina,OreSala,OreAntonio,OrePietro\n';
             closingsData.forEach(i => {
-                csv += `"${i.data}","${i.operatore}",${i.scontrinoFiscale},${i.coperti},${i.incassoGestionale},${i.incassoReale},${i.bancomat},${i.salifou},${i.asporto},${i.asportoOrdini},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro},"${i.speseDesc}",${i.speseImporto}\n`;
+                csv += `"${i.data}","${i.operatore}",${i.scontrinoFiscale},${i.coperti},${i.incassoGestionale},${i.incassoReale},${i.bancomat},${i.salifou},${i.asporto},${i.asportoOrdini},"${i.speseDesc || ''}","${i.speseTipo || 'Scontrino'}",${i.speseImporto || 0},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
