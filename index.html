@@ -181,12 +181,22 @@
                     </div>
                 </div>
 
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                <!-- KPI Cards (Aggiunta Differenza Incasso Reale - Gestionale) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Incasso Reale (Ultima Serata)</p>
+                        <p class="text-xs font-medium text-slate-400">Incasso Reale (Ultima)</p>
                         <h3 id="dash-incasso-reale" class="text-2xl font-bold text-white mt-2">€ 0,00</h3>
                         <span id="dash-operatore" class="text-xs text-amber-400 font-medium block mt-1">Operatore: -</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Incasso Gestionale (Ultima)</p>
+                        <h3 id="dash-incasso-gestionale" class="text-2xl font-bold text-sky-400 mt-2">€ 0,00</h3>
+                        <span class="text-xs text-slate-500 block mt-1">Valore gestionale</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Diff. (Reale - Gestionale)</p>
+                        <h3 id="dash-diff-reale-gestionale" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
+                        <span id="dash-diff-label" class="text-xs text-slate-500 block mt-1">Scostamento incassi</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Scontrino Fiscale (€)</p>
@@ -204,14 +214,9 @@
                         <span id="dash-asporto-ordini" class="text-xs text-slate-400 block mt-1">0 ordini effettuati</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Salifou (Ultima Serata)</p>
-                        <h3 id="dash-salifou" class="text-2xl font-bold text-pink-400 mt-2">€ 0,00</h3>
-                        <span id="dash-salifou-perc" class="text-xs text-slate-400 block mt-1">0% dell'incasso</span>
-                    </div>
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Fondo Cassa / Scostamento</p>
+                        <p class="text-xs font-medium text-slate-400">Fondo Cassa / Scost.</p>
                         <h3 id="dash-fondo-cassa" class="text-2xl font-bold mt-2 text-white">€ 300,00</h3>
-                        <span id="dash-ammanco-label" class="text-xs text-slate-500 block mt-1">Ammanco cassa: € 0,00</span>
+                        <span id="dash-ammanco-label" class="text-xs text-slate-500 block mt-1">Fondo regolare</span>
                     </div>
                 </div>
 
@@ -397,7 +402,7 @@
                 </div>
             </section>
 
-            <!-- TAB 4: ANALISI (AGGIUNTA BUSSOLA E GRAFICO PERIODO) -->
+            <!-- TAB 4: ANALISI -->
             <section id="tab-analisi" class="hidden space-y-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
@@ -715,6 +720,8 @@
         function renderDashboard() {
             if(closingsData.length === 0) {
                 document.getElementById('dash-incasso-reale').innerText = '€ 0,00';
+                document.getElementById('dash-incasso-gestionale').innerText = '€ 0,00';
+                document.getElementById('dash-diff-reale-gestionale').innerText = '€ 0,00';
                 document.getElementById('dash-operatore').innerText = 'Operatore: -';
                 document.getElementById('dash-scontrino').innerText = '€ 0,00';
                 document.getElementById('dash-coperto-medio').innerText = '€ 0,00';
@@ -728,6 +735,24 @@
             const last = closingsData[0];
 
             document.getElementById('dash-incasso-reale').innerText = `€ ${last.incassoReale.toFixed(2)}`;
+            document.getElementById('dash-incasso-gestionale').innerText = `€ ${last.incassoGestionale.toFixed(2)}`;
+            
+            const diffRealeGestionale = last.incassoReale - last.incassoGestionale;
+            const diffEl = document.getElementById('dash-diff-reale-gestionale');
+            const diffLabel = document.getElementById('dash-diff-label');
+            
+            diffEl.innerText = `${diffRealeGestionale >= 0 ? '+' : ''}€ ${diffRealeGestionale.toFixed(2)}`;
+            if(diffRealeGestionale > 0) {
+                diffEl.className = "text-2xl font-bold mt-2 text-emerald-400";
+                diffLabel.innerText = "Reale superiore a gestionale";
+            } else if(diffRealeGestionale < 0) {
+                diffEl.className = "text-2xl font-bold mt-2 text-rose-400";
+                diffLabel.innerText = "Reale inferiore a gestionale";
+            } else {
+                diffEl.className = "text-2xl font-bold mt-2 text-white";
+                diffLabel.innerText = "Perfettamente allineati";
+            }
+
             document.getElementById('dash-operatore').innerText = `Operatore: ${last.operatore}`;
             document.getElementById('dash-scontrino').innerText = `€ ${last.scontrinoFiscale.toFixed(2)}`;
             document.getElementById('dash-coperto-medio').innerText = `€ ${last.copertoMedio.toFixed(2)}`;
@@ -944,7 +969,6 @@
             document.getElementById('ore-antonio-tot').innerText = `${oreAntonio} h`;
             document.getElementById('ore-pietro-tot').innerText = `${orePietro} h`;
 
-            // Aggiorna Bussola Analisi & Grafico Periodo
             const avgTargetPeriodo = filtered.length > 0 ? ((totOrePeriodo * 18) * 3) / filtered.length : 0;
             const avgIncassoPeriodo = filtered.length > 0 ? totIncassi / filtered.length : 0;
             document.getElementById('analysis-gauge-target').innerText = `€ ${avgTargetPeriodo.toFixed(2)} (media serata)`;
