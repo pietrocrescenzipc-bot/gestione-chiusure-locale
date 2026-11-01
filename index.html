@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js per i grafici -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDK per la sincronizzazione in tempo reale (derivato dalla Tombola) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overflow-y: auto; }
@@ -60,6 +63,7 @@
             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs text-slate-400">
                 <p class="font-semibold text-slate-300">Note Struttura:</p>
                 <p class="text-emerald-400 font-medium mt-0.5">Senza affitto | Soci Operativi</p>
+                <p class="text-blue-400 font-medium mt-1"><i class="fa-solid fa-cloud"></i> Cloud Live Sync Attivo</p>
             </div>
         </div>
     </aside>
@@ -127,8 +131,8 @@
                 </button>
                 <span class="font-bold text-white text-base" id="mobile-current-section">Dashboard</span>
             </div>
-            <div class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-bold text-xs">
-                <i class="fa-solid fa-pizza-slice"></i> Manager
+            <div class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-bold text-xs flex items-center space-x-1">
+                <i class="fa-solid fa-pizza-slice"></i> <span>Manager</span>
             </div>
         </header>
 
@@ -139,7 +143,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Dashboard Generale</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave.</p>
+                        <p class="text-xs sm:text-sm text-slate-400">Panoramica rapida dell'ultima serata e indicatori chiave (Sincronizzati Live).</p>
                     </div>
                     <button onclick="switchTab('nuova')" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-plus"></i>
@@ -221,13 +225,13 @@
                 <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
                     <div>
                         <h2 id="form-title" class="text-xl sm:text-2xl font-bold text-white">Compilazione Chiusura Serata</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Inserisci o modifica i dati esatti della chiusura.</p>
+                        <p class="text-xs sm:text-sm text-slate-400">I dati salvati saranno immediatamente visibili a tutti i soci online.</p>
                     </div>
                     <button type="button" id="btn-cancel-edit" onclick="resetFormMode()" class="hidden bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs hover:bg-slate-700 transition">Annulla Modifica</button>
                 </div>
 
                 <form id="closingForm" onsubmit="saveClosing(event)" class="bg-slate-950 border border-slate-800 p-5 sm:p-8 rounded-2xl shadow-xl space-y-6">
-                    <input type="hidden" id="edit-index" value="-1">
+                    <input type="hidden" id="edit-id" value="">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data Serata</label>
@@ -330,7 +334,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Storico Chiusure & Scontrini</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Tutti i dati registrati delle serate passate (Modificabili ed eliminabili).</p>
+                        <p class="text-xs sm:text-sm text-slate-400">Archivio cloud condiviso in tempo reale.</p>
                     </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                         <button onclick="exportCSV()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-sm">
@@ -339,7 +343,7 @@
                         </button>
                         <button onclick="resetData()" class="flex-1 sm:flex-none bg-rose-950 text-rose-400 hover:bg-rose-900 font-medium px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-sm">
                             <i class="fa-solid fa-trash"></i>
-                            <span>Reset Dati</span>
+                            <span>Reset Cloud</span>
                         </button>
                     </div>
                 </div>
@@ -470,7 +474,7 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-white">Analisi & Suggerimenti Smart</h3>
-                            <p class="text-xs text-slate-400">Generato in tempo reale dall'archivio chiusure.</p>
+                            <p class="text-xs text-slate-400">Generato in tempo reale dall'archivio cloud.</p>
                         </div>
                     </div>
                     <div id="ai-suggestion-content" class="text-sm text-slate-300 space-y-3 leading-relaxed">
@@ -488,9 +492,14 @@
         </main>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT -->
+    <!-- SCRIPT JAVASCRIPT CON CONNESSIONE FIREBASE REALTIME -->
     <script>
-        let closingsData = JSON.parse(localStorage.getItem('pizzeria_closings')) || [];
+        // Configurazione Firebase condivisa (stessa della Tombola per garantire la sincronizzazione live)
+        const firebaseConfig = { databaseURL: "https://tombola-galleon-default-rtdb.firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let closingsData = [];
         let trendChartInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -498,6 +507,21 @@
             const dataInput = document.getElementById('chiusura-data');
             if(dataInput && !dataInput.value) {
                 dataInput.value = today;
+            }
+        });
+
+        // Ascolto in tempo reale dei dati dal database Firebase
+        db.ref('pizzeria_closings').on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                // Converte l'oggetto Firebase in array e ordina per data decrescente
+                closingsData = Object.keys(data).map(key => ({
+                    firebaseId: key,
+                    ...data[key]
+                }));
+                closingsData.sort((a, b) => new Date(b.data) - new Date(a.data));
+            } else {
+                closingsData = [];
             }
             refreshAllData();
         });
@@ -545,7 +569,7 @@
 
         function saveClosing(e) {
             e.preventDefault();
-            const editIndex = parseInt(document.getElementById('edit-index').value);
+            const editId = document.getElementById('edit-id').value;
 
             const newEntry = {
                 data: document.getElementById('chiusura-data').value,
@@ -570,27 +594,27 @@
             newEntry.ammancoCassa = newEntry.incassoReale - newEntry.incassoGestionale;
             newEntry.copertoMedio = newEntry.coperti > 0 ? (newEntry.incassoReale - newEntry.asporto) / newEntry.coperti : 0;
 
-            if (editIndex >= 0) {
-                // Modifica esistente
-                closingsData[editIndex] = newEntry;
-                alert('Chiusura modificata con successo!');
+            if (editId) {
+                // Aggiorna sul cloud Firebase
+                db.ref('pizzeria_closings/' + editId).set(newEntry).then(() => {
+                    alert('Chiusura modificata e sincronizzata online con successo!');
+                });
             } else {
-                // Nuova inserimento
-                closingsData.push(newEntry);
-                alert('Chiusura salvata con successo!');
+                // Crea nuovo record sul cloud Firebase
+                db.ref('pizzeria_closings').push(newEntry).then(() => {
+                    alert('Chiusura salvata e sincronizzata online in tempo reale!');
+                });
             }
-
-            closingsData.sort((a,b) => new Date(b.data) - new Date(a.data));
-            localStorage.setItem('pizzeria_closings', JSON.stringify(closingsData));
 
             resetFormMode();
             switchTab('dashboard');
-            refreshAllData();
         }
 
-        function editClosing(index) {
-            const item = closingsData[index];
-            document.getElementById('edit-index').value = index;
+        function editClosing(firebaseId) {
+            const item = closingsData.find(i => i.firebaseId === firebaseId);
+            if(!item) return;
+
+            document.getElementById('edit-id').value = item.firebaseId;
             document.getElementById('chiusura-data').value = item.data;
             document.getElementById('chiusura-operatore').value = item.operatore;
             document.getElementById('chiusura-scontrino').value = item.scontrinoFiscale;
@@ -609,7 +633,6 @@
             document.getElementById('chiusura-spese-desc').value = item.speseDesc || '';
             document.getElementById('chiusura-spese-importo').value = item.speseImporto || '';
 
-            // Cambia titolo e mostra pulsante annulla
             document.getElementById('form-title').innerText = "Modifica Chiusura Serata";
             document.getElementById('btn-submit-form').querySelector('span').innerText = "Aggiorna Chiusura";
             document.getElementById('btn-cancel-edit').classList.remove('hidden');
@@ -619,7 +642,7 @@
 
         function resetFormMode() {
             document.getElementById('closingForm').reset();
-            document.getElementById('edit-index').value = -1;
+            document.getElementById('edit-id').value = "";
             document.getElementById('form-title').innerText = "Compilazione Chiusura Serata";
             document.getElementById('btn-submit-form').querySelector('span').innerText = "Salva Chiusura Serata";
             document.getElementById('btn-cancel-edit').classList.add('hidden');
@@ -739,11 +762,11 @@
             tbody.innerHTML = '';
 
             if(closingsData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-500">Nessuna chiusura registrata.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-500">Nessuna chiusura registrata online.</td></tr>`;
                 return;
             }
 
-            closingsData.forEach((item, index) => {
+            closingsData.forEach((item) => {
                 const diffCassa = item.fondoCassa - 300.00;
                 let diffBadge = `<span class="text-slate-400">€ 0,00</span>`;
                 if(diffCassa < 0) diffBadge = `<span class="text-rose-400 font-semibold">-€ ${Math.abs(diffCassa).toFixed(2)}</span>`;
@@ -763,10 +786,10 @@
                     <td class="p-4">${item.coperti}</td>
                     <td class="p-4 text-emerald-400">€ ${item.copertoMedio.toFixed(2)}</td>
                     <td class="p-4 space-x-2">
-                        <button onclick="editClosing(${index})" class="text-amber-400 hover:text-amber-300 p-1.5 rounded-lg transition bg-amber-950/40 hover:bg-amber-950" title="Modifica">
+                        <button onclick="editClosing('${item.firebaseId}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded-lg transition bg-amber-950/40 hover:bg-amber-950" title="Modifica">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button onclick="deleteClosing(${index})" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg transition bg-rose-950/40 hover:bg-rose-950" title="Elimina">
+                        <button onclick="deleteClosing('${item.firebaseId}')" class="text-rose-400 hover:text-rose-300 p-1.5 rounded-lg transition bg-rose-950/40 hover:bg-rose-950" title="Elimina">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
@@ -775,11 +798,11 @@
             });
         }
 
-        function deleteClosing(index) {
-            if(confirm('Sei sicuro di voler eliminare questa chiusura?')) {
-                closingsData.splice(index, 1);
-                localStorage.setItem('pizzeria_closings', JSON.stringify(closingsData));
-                refreshAllData();
+        function deleteClosing(firebaseId) {
+            if(confirm('Sei sicuro di voler eliminare questa chiusura dal cloud?')) {
+                db.ref('pizzeria_closings/' + firebaseId).remove().then(() => {
+                    alert('Chiusura eliminata con successo.');
+                });
             }
         }
 
@@ -961,11 +984,10 @@
         }
 
         function resetData() {
-            if(confirm('ATTENZIONE: Verranno eliminati tutti i dati salvati nello storico. Continuare?')) {
-                localStorage.removeItem('pizzeria_closings');
-                closingsData = [];
-                refreshAllData();
-                alert('Dati resettati con successo.');
+            if(confirm('ATTENZIONE: Verranno eliminati TUTTI i dati salvati nel cloud online. Continuare?')) {
+                db.ref('pizzeria_closings').remove().then(() => {
+                    alert('Dati cloud resettati con successo.');
+                });
             }
         }
     </script>
