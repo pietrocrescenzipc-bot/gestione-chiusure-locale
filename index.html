@@ -494,7 +494,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-xl sm:text-2xl font-bold text-white">Analisi Periodo & Totali</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">Filtra per periodo e visualizza il riepilogo aggregato.</p>
+                        <p class="text-xs sm:text-sm text-slate-400">Filtra per periodo e confronta le percentuali con il commercialista.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 bg-slate-950 border border-slate-800 p-3 rounded-2xl w-full sm:w-auto">
                         <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Periodo:</span>
@@ -514,31 +514,36 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Totale Incassi Reali (Periodo)</p>
+                        <p class="text-xs font-medium text-slate-400">Totale Incassi Reali</p>
                         <h3 id="analisi-incassi" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
                         <span id="analisi-serate-count" class="text-xs text-slate-500 block mt-1">0 serate registrate</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Scontrino Medio (Periodo)</p>
+                        <p class="text-xs font-medium text-slate-400">Scontrino Medio</p>
                         <h3 id="analisi-scontrino-medio" class="text-2xl font-bold text-amber-400 mt-2">€ 0,00</h3>
                         <span class="text-xs text-slate-500 block mt-1">Media periodo</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Costo Personale (Stimato)</p>
+                        <p class="text-xs font-medium text-slate-400">Costo Personale (Stima)</p>
                         <h3 id="analisi-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
-                        <span id="analisi-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore totali</span>
+                        <span id="analisi-personale-pct" class="text-xs text-purple-300 block mt-1 font-semibold">0.0% (Target: 30-35%)</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Totale Asporto (Periodo)</p>
-                        <h3 id="analisi-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
-                        <span id="analisi-asporto-ordini" class="text-xs text-slate-500 block mt-1">0 pezzi totali</span>
+                        <p class="text-xs font-medium text-slate-400">Costi Fissi (Utenze/Tasse)</p>
+                        <h3 id="analisi-costi-fissi" class="text-2xl font-bold text-cyan-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-fissi-pct" class="text-xs text-cyan-300 block mt-1 font-semibold">0.0% (Target: 10-14%)</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Differenza Cassa (Reale - Gestionale)</p>
-                        <h3 id="analisi-diff-cassa" class="text-2xl font-bold mt-2 text-white">€ 0,00</h3>
-                        <span class="text-xs text-slate-500 block mt-1">Somma scostamenti</span>
+                        <p class="text-xs font-medium text-slate-400">Food Cost (Stimato)</p>
+                        <h3 id="analisi-food-cost-val" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-food-cost-pct" class="text-xs text-blue-300 block mt-1 font-semibold">0.0% (Target: 28-32%)</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
+                        <p class="text-xs font-medium text-slate-400">Utile Netto Operativo</p>
+                        <h3 id="analisi-utile-netto" class="text-2xl font-bold text-emerald-400 mt-2">€ 0,00</h3>
+                        <span id="analisi-utile-pct" class="text-xs text-emerald-300 block mt-1 font-semibold">0.0% (Target: 25%)</span>
                     </div>
                 </div>
 
@@ -572,7 +577,7 @@
                     </div>
                 </div>
 
-                <!-- NUOVA SEZIONE: ANALISI STORICA PER GIORNO DELLA SETTIMANA -->
+                <!-- ANALISI STORICA PER GIORNO DELLA SETTIMANA -->
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
                     <div class="flex items-center space-x-3 pb-3 border-b border-slate-800">
                         <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl border border-amber-500/20">
@@ -673,31 +678,6 @@
                         <canvas id="analysisChart"></canvas>
                     </div>
                 </div>
-
-                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl">
-                    <h3 class="font-bold text-white text-lg mb-4 flex items-center space-x-2">
-                        <i class="fa-solid fa-clock text-purple-400"></i>
-                        <span>Ripartizione Ore per Settore & Personale nel Periodo</span>
-                    </h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <p class="text-xs text-slate-400">Ore Cucina</p>
-                            <h4 id="ore-cucina-tot" class="text-xl font-bold text-white mt-1">0 h</h4>
-                        </div>
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <p class="text-xs text-slate-400">Ore Sala</p>
-                            <h4 id="ore-sala-tot" class="text-xl font-bold text-white mt-1">0 h</h4>
-                        </div>
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <p class="text-xs text-slate-400">Ore Antonio</p>
-                            <h4 id="ore-antonio-tot" class="text-xl font-bold text-white mt-1">0 h</h4>
-                        </div>
-                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <p class="text-xs text-slate-400">Ore Pietro</p>
-                            <h4 id="ore-pietro-tot" class="text-xl font-bold text-white mt-1">0 h</h4>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             <!-- TAB 4-BIS: PARAMETRI & COSTI DINAMICI -->
@@ -724,7 +704,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Stima % Food Cost / Materie Prime</label>
                             <input type="number" step="1" id="param-food-cost" value="30" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
-                            <span class="text-xs text-slate-500 mt-1 block">Incidenza media stimata sul venduto.</span>
+                            <span class="text-xs text-slate-500 mt-1 block">Incidenza media stimata sul venduto (Target: 28-32%).</span>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa Target Standard (€)</label>
@@ -734,7 +714,15 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">% Margine Operativo Obiettivo</label>
                             <input type="number" step="1" id="param-margine-obiettivo" value="25" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
-                            <span class="text-xs text-slate-500 mt-1 block">Target percentuale di utile operativo.</span>
+                            <span class="text-xs text-slate-500 mt-1 block">Target percentuale di utile operativo (Target: 20-25%).</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-6 pt-4 border-t border-slate-800">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Stima Costi Fissi Giornalieri (Utenze, Servizi, Tasse) (€ / giorno)</label>
+                            <input type="number" step="1" id="param-costi-fissi" value="25" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Quota fissa stimata per ogni giorno di apertura (Target complessivo: 10-14%).</span>
                         </div>
                     </div>
 
@@ -798,7 +786,7 @@
                         <p class="text-slate-500 italic">Nessuna domanda posta in questa sessione. Scrivi qui sotto per iniziare.</p>
                     </div>
                     <div class="flex gap-2">
-                        <input type="text" id="ai-user-input" placeholder="Es. Come posso ottimizzare le ore se il coperto medio cala?" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500" onkeypress="if(event.key === 'Enter') sendUserQueryToAI()">
+                        <input type="text" id="ai-user-input" placeholder="Es. Come confrontare le percentuali con il commercialista?" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500" onkeypress="if(event.key === 'Enter') sendUserQueryToAI()">
                         <button onclick="sendUserQueryToAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-amber-500/20">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>Invia</span>
@@ -822,7 +810,8 @@
             moltiplicatore: 3,
             foodCostPct: 30,
             fondoCassaTarget: 300,
-            margineObiettivo: 25
+            margineObiettivo: 25,
+            costiFissiGiornalieri: 25
         };
 
         let trendChartInstance = null;
@@ -845,6 +834,7 @@
                 document.getElementById('param-food-cost').value = globalParams.foodCostPct;
                 document.getElementById('param-fondo-cassa').value = globalParams.fondoCassaTarget;
                 document.getElementById('param-margine-obiettivo').value = globalParams.margineObiettivo;
+                document.getElementById('param-costi-fissi').value = globalParams.costiFissiGiornalieri !== undefined ? globalParams.costiFissiGiornalieri : 25;
             }
             refreshAllData();
         });
@@ -911,11 +901,12 @@
                 moltiplicatore: parseFloat(document.getElementById('param-moltiplicatore').value) || 3,
                 foodCostPct: parseFloat(document.getElementById('param-food-cost').value) || 30,
                 fondoCassaTarget: parseFloat(document.getElementById('param-fondo-cassa').value) || 300,
-                margineObiettivo: parseFloat(document.getElementById('param-margine-obiettivo').value) || 25
+                margineObiettivo: parseFloat(document.getElementById('param-margine-obiettivo').value) || 25,
+                costiFissiGiornalieri: parseFloat(document.getElementById('param-costi-fissi').value) || 25
             };
 
             db.ref('pizzeria_params').set(newP).then(() => {
-                alert('Parametri aziendali e costi aggiornati con successo nel cloud!');
+                alert('Parametri aziendali aggiornati con successo nel cloud!');
                 refreshAllData();
             });
         }
@@ -1250,15 +1241,12 @@
                 if(dStart && dEnd) filtered = closingsData.filter(i => i.data >= dStart && i.data <= dEnd);
             }
 
-            let totIncassi = 0, totAsporto = 0, totOrdiniAsporto = 0, totDiffCassa = 0;
+            let totIncassi = 0;
             let oreCucina = 0, oreSala = 0, oreAntonio = 0, orePietro = 0, totCoperti = 0;
             let totOrePeriodo = 0;
 
             filtered.forEach(item => {
                 totIncassi += (parseFloat(item.incassoReale) || 0);
-                totAsporto += (parseFloat(item.asporto) || 0);
-                totOrdiniAsporto += (parseInt(item.asportoOrdini) || 0);
-                totDiffCassa += ((parseFloat(item.fondoCassa) || globalParams.fondoCassaTarget) - globalParams.fondoCassaTarget);
                 oreCucina += (parseFloat(item.oreCucina) || 0);
                 oreSala += (parseFloat(item.oreSala) || 0);
                 oreAntonio += (parseFloat(item.oreAntonio) || 0);
@@ -1267,20 +1255,44 @@
             });
 
             totOrePeriodo = oreCucina + oreSala + oreAntonio + orePietro;
+            
+            // Calcoli in Euro e Percentuali (%)
             const spesaPersonale = totOrePeriodo * globalParams.costoOrario;
+            const persPct = totIncassi > 0 ? (spesaPersonale / totIncassi) * 100 : 0;
+
+            const costiFissiPeriodo = filtered.length * (globalParams.costiFissiGiornalieri || 25);
+            const fissiPct = totIncassi > 0 ? (costiFissiPeriodo / totIncassi) * 100 : 0;
+
+            const foodCostStimato = totIncassi * (globalParams.foodCostPct / 100);
+
+            const utileNettoOperativo = totIncassi - spesaPersonale - foodCostStimato - costiFissiPeriodo;
+            const utilePct = totIncassi > 0 ? (utileNettoOperativo / totIncassi) * 100 : 0;
+
             const scontrinoMedioPeriodo = totCoperti > 0 ? (totIncassi / totCoperti) : 0;
             const produttivitaOrariaPeriodo = totOrePeriodo > 0 ? (totIncassi / totOrePeriodo) : 0;
 
+            // Renderizzazione UI Analisi con Percentuali
             document.getElementById('analisi-incassi').innerText = `€ ${totIncassi.toFixed(2)}`;
             document.getElementById('analisi-serate-count').innerText = `${filtered.length} serate registrate`;
             document.getElementById('analisi-scontrino-medio').innerText = `€ ${scontrinoMedioPeriodo.toFixed(2)}`;
+            
             document.getElementById('analisi-personale').innerText = `€ ${spesaPersonale.toFixed(2)}`;
-            document.getElementById('analisi-ore-totali').innerText = `${totOrePeriodo} ore totali`;
-            document.getElementById('analisi-asporto').innerText = `€ ${totAsporto.toFixed(2)}`;
-            document.getElementById('analisi-asporto-ordini').innerText = `${totOrdiniAsporto} pezzi totali`;
+            document.getElementById('analisi-personale-pct').innerText = `${persPct.toFixed(1)}% sul fatturato (Target: 30-35%)`;
+
+            document.getElementById('analisi-costi-fissi').innerText = `€ ${costiFissiPeriodo.toFixed(2)}`;
+            document.getElementById('analisi-fissi-pct').innerText = `${fissiPct.toFixed(1)}% sul fatturato (Target: 10-14%)`;
+
+            document.getElementById('analisi-food-cost-val').innerText = `€ ${foodCostStimato.toFixed(2)}`;
+            document.getElementById('analisi-food-cost-pct').innerText = `${globalParams.foodCostPct}% (Target: 28-32%)`;
+
+            const utileEl = document.getElementById('analisi-utile-netto');
+            utileEl.innerText = `€ ${utileNettoOperativo.toFixed(2)}`;
+            utileEl.className = utileNettoOperativo >= 0 ? "text-2xl font-bold mt-2 text-emerald-400" : "text-2xl font-bold mt-2 text-rose-400";
+            document.getElementById('analisi-utile-pct').innerText = `${utilePct.toFixed(1)}% sul fatturato (Target: ${globalParams.margineObiettivo}%)`;
 
             document.getElementById('produttivita-oraria-val').innerText = `€ ${produttivitaOrariaPeriodo.toFixed(2)} / h`;
             document.getElementById('produttivita-ore-tot').innerText = `${totOrePeriodo} h`;
+            
             const prodStatusLabel = document.getElementById('produttivita-status-label');
             if(produttivitaOrariaPeriodo >= 50) {
                 prodStatusLabel.innerText = "Ottima efficienza (Sopra target) 🚀";
@@ -1292,15 +1304,6 @@
                 prodStatusLabel.innerText = "In linea con il periodo";
                 prodStatusLabel.className = "text-xs text-slate-500 block";
             }
-
-            const diffEl = document.getElementById('analisi-diff-cassa');
-            diffEl.innerText = `€ ${totDiffCassa.toFixed(2)}`;
-            diffEl.className = totDiffCassa < 0 ? "text-2xl font-bold mt-2 text-rose-400" : totDiffCassa > 0 ? "text-2xl font-bold mt-2 text-emerald-400" : "text-2xl font-bold mt-2 text-white";
-
-            document.getElementById('ore-cucina-tot').innerText = `${oreCucina} h`;
-            document.getElementById('ore-sala-tot').innerText = `${oreSala} h`;
-            document.getElementById('ore-antonio-tot').innerText = `${oreAntonio} h`;
-            document.getElementById('ore-pietro-tot').innerText = `${orePietro} h`;
 
             renderGiorniSettimana();
 
@@ -1335,12 +1338,9 @@
             }
 
             document.getElementById('analysis-bussola-coperti-val').innerText = `${totCoperti} coperti`;
-            
             const avgCopertoMedioPeriodo = filtered.length > 0 ? (filtered.reduce((acc, s) => acc + (s.copertoMedio || 0), 0) / filtered.length) : 0;
             document.getElementById('analysis-bussola-coperto-val').innerText = `€ ${avgCopertoMedioPeriodo.toFixed(2)}`;
-            
             document.getElementById('analysis-bussola-staff-val').innerText = `€ ${produttivitaOrariaPeriodo.toFixed(2)} / h`;
-            
             document.getElementById('analysis-bussola-costi-val').innerText = `Target ${globalParams.margineObiettivo}%`;
 
             renderAnalysisChart(filtered);
@@ -1352,9 +1352,6 @@
             container.innerHTML = '';
 
             const giorniNomi = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
-            // JavaScript getDay(): 0=Domenica, 1=Lunedì, ..., 6=Sabato. Mappiamo in ordine Lun-Dom:
-            // Indice JS: 1(Lun), 2(Mar), 3(Mer), 4(Gio), 5(Ven), 6(Sab), 0(Dom)
-
             const mappaGiorni = {
                 1: 'Lunedì', 2: 'Martedì', 3: 'Mercoledì', 4: 'Giovedì', 5: 'Venerdì', 6: 'Sabato', 0: 'Domenica'
             };
@@ -1493,11 +1490,9 @@
                 return;
             }
 
-            let totalIncassi = 0, totalCoperti = 0, totalAsporto = 0, totalOre = 0;
+            let totalIncassi = 0, totalOre = 0;
             closingsData.forEach(i => {
                 totalIncassi += (parseFloat(i.incassoReale) || 0);
-                totalCoperti += (parseInt(i.coperti) || 0);
-                totalAsporto += (parseFloat(i.asporto) || 0);
                 totalOre += (parseFloat(i.oreCucina) || 0) + (parseFloat(i.oreSala) || 0) + (parseFloat(i.oreAntonio) || 0) + (parseFloat(i.orePietro) || 0);
             });
 
@@ -1505,9 +1500,8 @@
             const produttivitaGlobale = totalOre > 0 ? (totalIncassi / totalOre).toFixed(2) : 0;
 
             contentBox.innerHTML = `
-                <p>💡 <strong>Panoramica Andamento:</strong> Nelle ultime <strong>${closingsData.length} serate</strong> monitorate, la pizzeria registra un incasso medio di <strong>€ ${avgIncasso.toFixed(2)}</strong>.</p>
-                <p>⚡ <strong>Rendimento Staff:</strong> La produttività oraria complessiva è di <strong>€ ${produttivitaGlobale} / h</strong> (su ${totalOre} ore totali registrate).</p>
-                <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Controlla la nuova ripartizione per giorno della settimana per ottimizzare la pianificazione dei turni prima dell'apertura!</p>
+                <p>💡 <strong>Panoramica Andamento:</strong> Nelle ultime <strong>${closingsData.length} serate</strong>, incasso medio di <strong>€ ${avgIncasso.toFixed(2)}</strong>.</p>
+                <p>📊 <strong>Confronto Percentuali:</strong> Ora puoi confrontare direttamente le percentuali di Personale (Target 30-35%), Costi Fissi (Target 10-14%) e Utile Netto (Target 25%) con i dati del commercialista!</p>
             `;
         }
 
@@ -1535,18 +1529,10 @@
 
                 if(closingsData.length === 0) {
                     aiResponse = "Non ci sono ancora dati nel cloud per rispondere alla tua domanda.";
-                } else if(qLower.includes('giorno') || qLower.includes('settimana') || qLower.includes('previsione')) {
-                    aiResponse = `📅 L'analisi per giorno della settimana raggruppa automaticamente le tue serate storiche per darti le medie di incasso e produttività. Usala per tarare le ore del personale nei giorni meno centrali rispetto al fine settimana!`;
-                } else if(qLower.includes('produttivita') || qLower.includes('ora')) {
-                    let totalOre = 0, totalIncassi = 0;
-                    closingsData.forEach(s => {
-                        totalOre += (s.oreCucina + s.oreSala + s.oreAntonio + s.orePietro);
-                        totalIncassi += s.incassoReale;
-                    });
-                    const prod = totalOre > 0 ? (totalIncassi / totalOre).toFixed(2) : 0;
-                    aiResponse = `📊 La produttività media attuale è di € ${prod} / h. Mantienila sopra i 50€/h per rispettare il margine del ${globalParams.margineObiettivo}%.`;
+                } else if(qLower.includes('commercialista') || qLower.includes('percentual')) {
+                    aiResponse = `📈 Per confrontare i dati con il commercialista, guarda la sezione Analisi: ogni voce mostra sia gli euro che la percentuale (%) calcolata sul fatturato. I target corretti sono: Food Cost 28-32%, Lavoro 30-35%, Fissi/Utenze 10-14%, e Utile Netto attorno al 25%.`;
                 } else {
-                    aiResponse = `🤖 Analisi basata sulle vostre chiusure a Marsciano: i dati sono sincronizzati. Controlla i nuovi box sui giorni della settimana nella sezione Analisi!`;
+                    aiResponse = `🤖 L'app è perfettamente allineata per il confronto con il bilancio. Se hai le percentuali del commercialista, scrivimele pure qui e le confrontiamo insieme!`;
                 }
 
                 const aiMsg = document.createElement('div');
