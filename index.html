@@ -453,6 +453,7 @@
                             <option value="mese_corrente" selected>Mese Corrente</option>
                             <option value="90">Ultimi 3 Mesi</option>
                             <option value="anno">Anno Corrente</option>
+                            <option value="tutto">Tutto lo Storico</option>
                             <option value="personalizzato">Personalizzato</option>
                         </select>
                         <div id="box-date-custom" class="hidden flex items-center space-x-2 w-full mt-2 sm:mt-0">
@@ -491,7 +492,7 @@
                     </div>
                 </div>
 
-                <!-- Bussola TachiMETRO & Grafico per il Periodo Selezionato -->
+                <!-- Bussola TACHIMETRO & Grafico per il Periodo Selezionato -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
                         <div>
@@ -1048,6 +1049,13 @@
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();
                 filtered = closingsData.filter(i => {
+                    // Gestione sicura della data stringa 'YYYY-MM-DD'
+                    const parts = i.data.split('-');
+                    if(parts.length === 3) {
+                        const dYear = parseInt(parts[0]);
+                        const dMonth = parseInt(parts[1]) - 1;
+                        return dMonth === currentMonth && dYear === currentYear;
+                    }
                     const d = new Date(i.data);
                     return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
                 });
@@ -1057,7 +1065,13 @@
                 filtered = closingsData.filter(i => new Date(i.data) >= limit);
             } else if(periodo === 'anno') {
                 const currentYear = now.getFullYear();
-                filtered = closingsData.filter(i => new Date(i.data).getFullYear() === currentYear);
+                filtered = closingsData.filter(i => {
+                    const parts = i.data.split('-');
+                    if(parts.length === 3) return parseInt(parts[0]) === currentYear;
+                    return new Date(i.data).getFullYear() === currentYear;
+                });
+            } else if(periodo === 'tutto') {
+                filtered = [...closingsData];
             } else if(periodo === 'personalizzato') {
                 const dStart = document.getElementById('data-inizio').value;
                 const dEnd = document.getElementById('data-fine').value;
