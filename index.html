@@ -187,16 +187,11 @@
                         </div>
                     </div>
                     <div class="text-center my-2 flex justify-center">
-                        <!-- TACHIMETRO SVG CON AGO DINAMICO -->
                         <div class="relative w-48 h-28 overflow-hidden">
                             <svg viewBox="0 0 200 110" class="w-full h-full">
-                                <!-- Sfondo arco tachimetro -->
                                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
-                                <!-- Zona Margine Ridotto (Rosso/Ambra) -->
                                 <path d="M 20 100 A 80 80 0 0 1 80 34" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round"/>
-                                <!-- Zona Profitto / Ottimale (Verde) -->
                                 <path d="M 80 34 A 80 80 0 0 1 180 100" fill="none" stroke="#34d399" stroke-width="16" stroke-linecap="round"/>
-                                <!-- Ago dinamico -->
                                 <g id="gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
                                     <line x1="100" y1="100" x2="100" y2="35" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
                                     <circle cx="100" cy="100" r="6" fill="#f59e0b"/>
@@ -274,7 +269,6 @@
                 <form id="closingForm" onsubmit="saveClosing(event)" class="bg-slate-950 border border-slate-800 p-5 sm:p-8 rounded-2xl shadow-xl space-y-6">
                     <input type="hidden" id="edit-id" value="">
                     
-                    <!-- RIGA BASE: Data e Operatore -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data Serata</label>
@@ -290,22 +284,18 @@
                         </div>
                     </div>
 
-                    <!-- BLOCCO ORDINATO ESATTAMENTE COME RICHIESTO -->
                     <div class="pt-4 border-t border-slate-800 space-y-4">
                         <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider">Parametri di Chiusura</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- 1. Scontrino fiscale -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">1. Scontrino Fiscale (€)</label>
                                 <input type="number" step="0.01" id="chiusura-scontrino" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 2. Salifou -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">2. Salifou (€)</label>
                                 <input type="number" step="0.01" id="chiusura-salifou" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 3. Bancomat -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">3. Bancomat (€)</label>
                                 <input type="number" step="0.01" id="chiusura-bancomat" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
@@ -313,17 +303,14 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- 4. Incasso gestionale -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">4. Incasso Gestionale (€)</label>
                                 <input type="number" step="0.01" id="chiusura-incasso-gestionale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 5. Coperti -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">5. Coperti</label>
                                 <input type="number" id="chiusura-coperti" placeholder="0" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 6. Media coperto (Calcolato/Visualizzato) -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">6. Media Coperto</label>
                                 <input type="text" id="chiusura-coperto-medio-preview" value="Calcolato in automatico" disabled class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 text-sm">
@@ -331,17 +318,14 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- 7. Asporto (Importo in €) -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">7. Incasso Asporto (€)</label>
                                 <input type="number" step="0.01" id="chiusura-asporto" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 8. Pezzi per asporto (Quantità/Pezzi) -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">8. Pezzi Asporto (Quantità)</label>
                                 <input type="number" id="chiusura-asporto-ordini" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- Incasso Reale -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Reale Totale (€)</label>
                                 <input type="number" step="0.01" id="chiusura-incasso-reale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
@@ -356,7 +340,6 @@
                         </div>
                     </div>
 
-                    <!-- Ore Personale -->
                     <div class="pt-4 border-t border-slate-800">
                         <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Ore Personale per Settore</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -379,7 +362,6 @@
                         </div>
                     </div>
 
-                    <!-- Spese Varie (Scontrino o Fattura) -->
                     <div class="pt-4 border-t border-slate-800">
                         <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Spese Varie / Prelievi cassa</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -509,7 +491,7 @@
                     </div>
                 </div>
 
-                <!-- Bussola & Grafico per il Periodo Selezionato -->
+                <!-- Bussola TachiMETRO & Grafico per il Periodo Selezionato -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
                         <div>
@@ -519,9 +501,23 @@
                             </h3>
                             <p class="text-xs text-slate-400 mt-1">Media Incasso Reale vs Soglia Regolarità</p>
                         </div>
-                        <div class="my-6 text-center">
-                            <h4 id="analysis-gauge-status" class="text-xl font-bold text-white mt-4">In attesa</h4>
-                            <p id="analysis-gauge-desc" class="text-xs text-slate-400 mt-1">Seleziona un periodo valido.</p>
+                        <div class="my-4 text-center flex justify-center">
+                            <!-- TACHIMETRO SVG PER L'ANALISI -->
+                            <div class="relative w-48 h-28 overflow-hidden">
+                                <svg viewBox="0 0 200 110" class="w-full h-full">
+                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
+                                    <path d="M 20 100 A 80 80 0 0 1 80 34" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round"/>
+                                    <path d="M 80 34 A 80 80 0 0 1 180 100" fill="none" stroke="#34d399" stroke-width="16" stroke-linecap="round"/>
+                                    <g id="analysis-gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
+                                        <line x1="100" y1="100" x2="100" y2="35" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                                        <circle cx="100" cy="100" r="6" fill="#f59e0b"/>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-center space-y-1 mb-2">
+                            <h4 id="analysis-gauge-status" class="text-lg font-bold text-white">In attesa</h4>
+                            <p id="analysis-gauge-desc" class="text-xs text-slate-400">Seleziona un periodo valido.</p>
                         </div>
                         <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
                             <span class="text-slate-400">Media Soglia Periodo:</span>
@@ -920,7 +916,6 @@
 
             if(targetBreakEven > 0) {
                 const ratio = last.incassoReale / targetBreakEven;
-                // Calcolo rotazione ago da -90deg (0%) a +90deg (200% o più del target)
                 let degrees = (ratio - 1) * 90; 
                 if(degrees < -90) degrees = -90;
                 if(degrees > 90) degrees = 90;
@@ -1074,27 +1069,26 @@
             let totOrePeriodo = 0;
 
             filtered.forEach(item => {
-                totIncassi += item.incassoReale;
-                totAsporto += item.asporto;
-                totOrdiniAsporto += item.asportoOrdini;
-                totDiffCassa += (item.fondoCassa - globalParams.fondoCassaTarget);
-                oreCucina += item.oreCucina;
-                oreSala += item.oreSala;
-                oreAntonio += item.oreAntonio;
-                orePietro += item.orePietro;
-                totCoperti += item.coperti;
-                totOrePeriodo += (item.oreCucina + item.oreSala + item.oreAntonio + item.orePietro);
+                totIncassi += (parseFloat(item.incassoReale) || 0);
+                totAsporto += (parseFloat(item.asporto) || 0);
+                totOrdiniAsporto += (parseInt(item.asportoOrdini) || 0);
+                totDiffCassa += ((parseFloat(item.fondoCassa) || globalParams.fondoCassaTarget) - globalParams.fondoCassaTarget);
+                oreCucina += (parseFloat(item.oreCucina) || 0);
+                oreSala += (parseFloat(item.oreSala) || 0);
+                oreAntonio += (parseFloat(item.oreAntonio) || 0);
+                orePietro += (parseFloat(item.orePietro) || 0);
+                totCoperti += (parseInt(item.coperti) || 0);
             });
 
-            const oreTotaliPeriodo = oreCucina + oreSala + oreAntonio + orePietro;
-            const spesaPersonale = oreTotaliPeriodo * globalParams.costoOrario;
+            totOrePeriodo = oreCucina + oreSala + oreAntonio + orePietro;
+            const spesaPersonale = totOrePeriodo * globalParams.costoOrario;
             const scontrinoMedioPeriodo = totCoperti > 0 ? (totIncassi / totCoperti) : 0;
 
             document.getElementById('analisi-incassi').innerText = `€ ${totIncassi.toFixed(2)}`;
             document.getElementById('analisi-serate-count').innerText = `${filtered.length} serate registrate`;
             document.getElementById('analisi-scontrino-medio').innerText = `€ ${scontrinoMedioPeriodo.toFixed(2)}`;
             document.getElementById('analisi-personale').innerText = `€ ${spesaPersonale.toFixed(2)}`;
-            document.getElementById('analisi-ore-totali').innerText = `${oreTotaliPeriodo} ore totali`;
+            document.getElementById('analisi-ore-totali').innerText = `${totOrePeriodo} ore totali`;
             document.getElementById('analisi-asporto').innerText = `€ ${totAsporto.toFixed(2)}`;
             document.getElementById('analisi-asporto-ordini').innerText = `${totOrdiniAsporto} pezzi totali`;
 
@@ -1113,21 +1107,28 @@
 
             const anStatus = document.getElementById('analysis-gauge-status');
             const anDesc = document.getElementById('analysis-gauge-desc');
+            const anNeedle = document.getElementById('analysis-gauge-needle');
 
             if(filtered.length > 0 && avgTargetPeriodo > 0) {
                 const ratio = avgIncassoPeriodo / avgTargetPeriodo;
+                let degrees = (ratio - 1) * 90;
+                if(degrees < -90) degrees = -90;
+                if(degrees > 90) degrees = 90;
+                if(anNeedle) anNeedle.style.transform = `rotate(${degrees}deg)`;
+
                 if(ratio >= 1) {
                     anStatus.innerText = "Periodo in Profitto / Margine Ottimale 🚀";
-                    anStatus.className = "text-xl font-bold text-emerald-400 mt-4";
+                    anStatus.className = "text-lg font-bold text-emerald-400";
                     anDesc.innerText = `Media incassi superiore alla soglia del ${((ratio - 1)*100).toFixed(1)}% (maggior margine).`;
                 } else {
                     anStatus.innerText = "Margine Periodo Ridotto ⚠️";
-                    anStatus.className = "text-xl font-bold text-amber-400 mt-4";
+                    anStatus.className = "text-lg font-bold text-amber-400";
                     anDesc.innerText = `Media sotto la soglia di € ${(avgTargetPeriodo - avgIncassoPeriodo).toFixed(2)} (minor margine).`;
                 }
             } else {
                 anStatus.innerText = "Dati insufficienti";
                 anDesc.innerText = "Nessuna chiusura trovata nel periodo.";
+                if(anNeedle) anNeedle.style.transform = `rotate(-90deg)`;
             }
 
             renderAnalysisChart(filtered);
@@ -1176,10 +1177,10 @@
                 let incassoTot = 0, copertiTot = 0, asportoTot = 0, pezziTot = 0;
 
                 opSerate.forEach(s => {
-                    incassoTot += s.incassoReale;
-                    copertiTot += s.coperti;
-                    asportoTot += s.asporto;
-                    pezziTot += s.asportoOrdini;
+                    incassoTot += (parseFloat(s.incassoReale) || 0);
+                    copertiTot += (parseInt(s.coperti) || 0);
+                    asportoTot += (parseFloat(s.asporto) || 0);
+                    pezziTot += (parseInt(s.asportoOrdini) || 0);
                 });
 
                 const mediaIncasso = opSerate.length > 0 ? (incassoTot / opSerate.length) : 0;
@@ -1231,10 +1232,10 @@
 
             let totalIncassi = 0, totalCoperti = 0, totalAsporto = 0, ammoCount = 0;
             closingsData.forEach(i => {
-                totalIncassi += i.incassoReale;
-                totalCoperti += i.coperti;
-                totalAsporto += i.asporto;
-                if(i.fondoCassa < globalParams.fondoCassaTarget) ammoCount++;
+                totalIncassi += (parseFloat(i.incassoReale) || 0);
+                totalCoperti += (parseInt(i.coperti) || 0);
+                totalAsporto += (parseFloat(i.asporto) || 0);
+                if((parseFloat(i.fondoCassa) || globalParams.fondoCassaTarget) < globalParams.fondoCassaTarget) ammoCount++;
             });
 
             const avgIncasso = totalIncassi / closingsData.length;
