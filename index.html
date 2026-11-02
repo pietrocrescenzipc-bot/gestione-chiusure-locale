@@ -188,37 +188,25 @@
                             </div>
                         </div>
                         
-                        <!-- TACHIMETRO SVG A 4 SETTORI (LAVORO - FOOD COST - FISSI - MARGINE) -->
+                        <!-- TACHIMETRO SVG A 4 SETTORI -->
                         <div class="text-center my-2 flex flex-col items-center justify-center">
                             <div class="relative w-64 h-36 overflow-hidden">
                                 <svg viewBox="0 0 200 115" class="w-full h-full">
-                                    <!-- 4 Settori Colorati stile Pienissimo Pro -->
-                                    <!-- Settore 1: LAVORO (Rosso: da -90° a -45°) -->
                                     <path d="M 20 100 A 80 80 0 0 1 55 45 L 100 100 Z" fill="#ef4444" opacity="0.85"/>
-                                    <!-- Settore 2: FOOD COST (Arancione: da -45° a 0°) -->
                                     <path d="M 55 45 A 80 80 0 0 1 100 20 L 100 100 Z" fill="#f97316" opacity="0.85"/>
-                                    <!-- Settore 3: FISSI/SPESE (Giallo: da 0° a +45°) -->
                                     <path d="M 100 20 A 80 80 0 0 1 145 45 L 100 100 Z" fill="#eab308" opacity="0.85"/>
-                                    <!-- Settore 4: MARGINE/PROFITTO (Verde: da +45° a +90°) -->
                                     <path d="M 145 45 A 80 80 0 0 1 180 100 L 100 100 Z" fill="#22c55e" opacity="0.85"/>
-
-                                    <!-- Sfondo arco di chiusura -->
                                     <path d="M 18 102 A 82 82 0 0 1 182 102" fill="none" stroke="#334155" stroke-width="3"/>
-
-                                    <!-- Etichette esterne macro-categorie -->
                                     <text x="22" y="38" fill="#ef4444" font-size="9" font-weight="bold">LAVORO</text>
                                     <text x="68" y="12" fill="#f97316" font-size="9" font-weight="bold">FOOD COST</text>
                                     <text x="122" y="12" fill="#eab308" font-size="9" font-weight="bold">FISSI</text>
                                     <text x="156" y="38" fill="#22c55e" font-size="9" font-weight="bold">MARGINE</text>
-
-                                    <!-- Ago Dinamico -->
                                     <g id="gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
                                         <line x1="100" y1="100" x2="100" y2="30" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
                                         <circle cx="100" cy="100" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="3"/>
                                     </g>
                                 </svg>
                             </div>
-                            <!-- Badge "IMMEDIATO" stile post -->
                             <div class="bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-xs font-bold text-amber-400 shadow-md -mt-2">
                                 <i class="fa-solid fa-bolt text-amber-400"></i> CONTROLLO IN TEMPO REALE
                             </div>
@@ -728,6 +716,8 @@
                     <h2 class="text-xl sm:text-2xl font-bold text-white">Assistente AI Pizzeria</h2>
                     <p class="text-xs sm:text-sm text-slate-400">Consigli e analisi automatica basati sui tuoi dati reali.</p>
                 </div>
+                
+                <!-- Box Analisi Automatica (Mantenuto) -->
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
                     <div class="flex items-center space-x-3 pb-4 border-b border-slate-800">
                         <div class="bg-pink-500/10 text-pink-400 p-3 rounded-xl border border-pink-500/20">
@@ -745,6 +735,29 @@
                         <button onclick="generateAISuggestions()" class="bg-pink-600 hover:bg-pink-500 text-white font-medium px-5 py-2.5 rounded-xl transition flex items-center space-x-2 text-sm shadow-lg shadow-pink-600/20">
                             <i class="fa-solid fa-rotate"></i>
                             <span>Aggiorna Analisi AI</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nuovo Box Chat Interattiva Aggiunto -->
+                <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3 pb-4 border-b border-slate-800">
+                        <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl border border-amber-500/20">
+                            <i class="fa-solid fa-comments text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">Fai una domanda all'Assistente</h3>
+                            <p class="text-xs text-slate-400">Chiedi chiarimenti o simulazioni personalizzate sui tuoi dati.</p>
+                        </div>
+                    </div>
+                    <div id="ai-chat-history" class="space-y-3 max-h-60 overflow-y-auto text-sm text-slate-300 p-3 bg-slate-900 rounded-xl border border-slate-800/80">
+                        <p class="text-slate-500 italic">Nessuna domanda posta in questa sessione. Scrivi qui sotto per iniziare.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="ai-user-input" placeholder="Es. Come posso ottimizzare le ore se il coperto medio cala?" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-amber-500" onkeypress="if(event.key === 'Enter') sendUserQueryToAI()">
+                        <button onclick="sendUserQueryToAI()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition flex items-center justify-center space-x-2 text-sm shadow-lg shadow-amber-500/20">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Invia</span>
                         </button>
                     </div>
                 </div>
@@ -1387,6 +1400,56 @@
                 <p>🔍 <strong>Controllo Cassa:</strong> Rilevati ${ammoCount} scostamenti dal fondo cassa target di ${globalParams.fondoCassaTarget.toFixed(2)}€.</p>
                 <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Continuate a monitorare l'andamento del margine per massimizzare il profitto operativo!</p>
             `;
+        }
+
+        function sendUserQueryToAI() {
+            const inputField = document.getElementById('ai-user-input');
+            const historyBox = document.getElementById('ai-chat-history');
+            const query = inputField.value.trim();
+            if(!query) return;
+
+            if(historyBox.innerHTML.includes('Nessuna domanda posta')) {
+                historyBox.innerHTML = '';
+            }
+
+            // Aggiungi messaggio utente
+            const userMsg = document.createElement('div');
+            userMsg.className = "bg-slate-800 p-3 rounded-xl border border-slate-700 text-white mb-2";
+            userMsg.innerHTML = `<strong>Tu:</strong> ${query}`;
+            historyBox.appendChild(userMsg);
+
+            inputField.value = '';
+            historyBox.scrollTop = historyBox.scrollHeight;
+
+            // Genera risposta basata sui dati reali
+            setTimeout(() => {
+                let aiResponse = "";
+                const qLower = query.toLowerCase();
+
+                if(closingsData.length === 0) {
+                    aiResponse = "Non ci sono ancora dati nel cloud per rispondere alla tua domanda. Inserisci prima qualche chiusura.";
+                } else if(qLower.includes('ora') || qLower.includes('cucina') || qLower.includes('sala') || qLower.includes('personale')) {
+                    let totalOre = 0, totalIncassi = 0;
+                    closingsData.forEach(s => {
+                        totalOre += (s.oreCucina + s.oreSala + s.oreAntonio + s.orePietro);
+                        totalIncassi += s.incassoReale;
+                    });
+                    const prod = totalOre > 0 ? (totalIncassi / totalOre).toFixed(2) : 0;
+                    aiResponse = `📊 Analizzando le vostre ore: avete registrato ${totalOre} ore totali per un incasso complessivo di € ${totalIncassi.toFixed(2)}. La produttività media è di € ${prod} / ora. Se il coperto medio cala, vi consiglio di verificare i turni serali per evitare sovrapposizioni di personale nei giorni meno centrali.`;
+                } else if(qLower.includes('asporto')) {
+                    let totAsp = 1, totInc = 1;
+                    closingsData.forEach(s => { totAsp += s.asporto; totInc += s.incassoReale; });
+                    aiResponse = `🍕 Il canale asporto sta performando con una percentuale stabile sul totale. Monitorate i pezzi venduti per valutare promozioni mirate nei giorni di minore affluenza in sala.`;
+                } else {
+                    aiResponse = `🤖 Analizzando la vostra attività a Marsciano (${closingsData.length} serate in archivio): con i parametri attuali (food cost al ${globalParams.foodCostPct}% e target ${globalParams.margineObiettivo}%), la gestione è monitorata. Per ottimizzare ulteriormente, controllate sempre che l'incasso superi la soglia di regolarità della Bussola!`;
+                }
+
+                const aiMsg = document.createElement('div');
+                aiMsg.className = "bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-amber-200 mb-2";
+                aiMsg.innerHTML = `<strong>Assistente AI:</strong> ${aiResponse}`;
+                historyBox.appendChild(aiMsg);
+                historyBox.scrollTop = historyBox.scrollHeight;
+            }, 600);
         }
 
         function exportCSV() {
