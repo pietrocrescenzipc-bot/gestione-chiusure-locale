@@ -218,7 +218,7 @@
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Totale Asporto (Serata)</p>
                         <h3 id="dash-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
-                        <span id="dash-asporto-ordini" class="text-xs text-slate-400 block mt-1">0 ordini effettuati</span>
+                        <span id="dash-asporto-ordini" class="text-xs text-slate-400 block mt-1">0 pezzi effettuati</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Fondo Cassa / Scost.</p>
@@ -268,9 +268,9 @@
                         </div>
                     </div>
 
-                    <!-- BLOCCO ORDINATO SECONDO LE TUE RICHIESTE -->
+                    <!-- BLOCCO ORDINATO ESATTAMENTE COME RICHIESTO -->
                     <div class="pt-4 border-t border-slate-800 space-y-4">
-                        <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider">Dati Economici e Vendite della Serata</h3>
+                        <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider">Parametri di Chiusura</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- 1. Scontrino fiscale -->
@@ -285,7 +285,7 @@
                             </div>
                             <!-- 3. Bancomat -->
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">3. Totale Bancomat (€)</label>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">3. Bancomat (€)</label>
                                 <input type="number" step="0.01" id="chiusura-bancomat" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
@@ -296,30 +296,37 @@
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">4. Incasso Gestionale (€)</label>
                                 <input type="number" step="0.01" id="chiusura-incasso-gestionale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- Incasso Reale (Necessario per i calcoli di cassa e bilancio) -->
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Reale Effettivo (€)</label>
-                                <input type="number" step="0.01" id="chiusura-incasso-reale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
-                            </div>
                             <!-- 5. Coperti -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">5. Coperti</label>
                                 <input type="number" id="chiusura-coperti" placeholder="0" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
+                            <!-- 6. Media coperto (Calcolato/Visualizzato) -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">6. Media Coperto</label>
+                                <input type="text" id="chiusura-coperto-medio-preview" value="Calcolato in automatico" disabled class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-slate-400 text-sm">
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- 7. Asporto -->
+                            <!-- 7. Asporto (Importo in €) -->
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">7. Totale Asporto (€)</label>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">7. Incasso Asporto (€)</label>
                                 <input type="number" step="0.01" id="chiusura-asporto" placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- 8. Pezzi per asporto -->
+                            <!-- 8. Pezzi per asporto (Quantità/Pezzi) -->
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">8. Numero Ordini Asporto</label>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">8. Pezzi Asporto (Quantità)</label>
                                 <input type="number" id="chiusura-asporto-ordini" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- Fondo Cassa -->
+                            <!-- Incasso Reale (Fondo obbligatorio per i calcoli finanziari) -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Reale Totale (€)</label>
+                                <input type="number" step="0.01" id="chiusura-incasso-reale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa Fine Serata (€)</label>
                                 <input type="number" step="0.01" id="chiusura-fondo-cassa" value="300.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
@@ -409,7 +416,8 @@
                                     <th class="p-4">Operatore</th>
                                     <th class="p-4">Scontrino Fiscale</th>
                                     <th class="p-4">Inc. Reale</th>
-                                    <th class="p-4">Asporto</th>
+                                    <th class="p-4">Asporto (€)</th>
+                                    <th class="p-4">Pezzi Asporto</th>
                                     <th class="p-4">Spesa Tracciata</th>
                                     <th class="p-4">Tipo Doc.</th>
                                     <th class="p-4">Fondo Cassa</th>
@@ -470,7 +478,7 @@
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Totale Asporto (Periodo)</p>
                         <h3 id="analisi-asporto" class="text-2xl font-bold text-blue-400 mt-2">€ 0,00</h3>
-                        <span id="analisi-asporto-ordini" class="text-xs text-slate-500 block mt-1">0 ordini totali</span>
+                        <span id="analisi-asporto-ordini" class="text-xs text-slate-500 block mt-1">0 pezzi totali</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
                         <p class="text-xs font-medium text-slate-400">Differenza Cassa (Reale - Gestionale)</p>
@@ -663,10 +671,10 @@
                 salifou: parseFloat(document.getElementById('chiusura-salifou').value) || 0,
                 bancomat: parseFloat(document.getElementById('chiusura-bancomat').value) || 0,
                 incassoGestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
-                incassoReale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
                 coperti: parseInt(document.getElementById('chiusura-coperti').value) || 0,
-                asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0,
-                asportoOrdini: parseInt(document.getElementById('chiusura-asporto-ordini').value) || 0,
+                asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0, // Importo in €
+                asportoOrdini: parseInt(document.getElementById('chiusura-asporto-ordini').value) || 0, // Pezzi/Quantità
+                incassoReale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
                 fondoCassa: parseFloat(document.getElementById('chiusura-fondo-cassa').value) || 300,
                 oreCucina: parseFloat(document.getElementById('ore-cucina').value) || 0,
                 oreSala: parseFloat(document.getElementById('ore-sala').value) || 0,
@@ -705,10 +713,10 @@
             document.getElementById('chiusura-salifou').value = item.salifou;
             document.getElementById('chiusura-bancomat').value = item.bancomat;
             document.getElementById('chiusura-incasso-gestionale').value = item.incassoGestionale;
-            document.getElementById('chiusura-incasso-reale').value = item.incassoReale;
             document.getElementById('chiusura-coperti').value = item.coperti;
             document.getElementById('chiusura-asporto').value = item.asporto;
             document.getElementById('chiusura-asporto-ordini').value = item.asportoOrdini;
+            document.getElementById('chiusura-incasso-reale').value = item.incassoReale;
             document.getElementById('chiusura-fondo-cassa').value = item.fondoCassa;
             document.getElementById('ore-cucina').value = item.oreCucina;
             document.getElementById('ore-sala').value = item.oreSala;
@@ -781,7 +789,7 @@
             document.getElementById('dash-scontrino').innerText = `€ ${last.scontrinoFiscale.toFixed(2)}`;
             document.getElementById('dash-coperto-medio').innerText = `€ ${last.copertoMedio.toFixed(2)}`;
             document.getElementById('dash-asporto').innerText = `€ ${last.asporto.toFixed(2)}`;
-            document.getElementById('dash-asporto-ordini').innerText = `${last.asportoOrdini} ordini effettuati`;
+            document.getElementById('dash-asporto-ordini').innerText = `${last.asportoOrdini} pezzi effettuati`;
 
             document.getElementById('dash-fondo-cassa').innerText = `€ ${last.fondoCassa.toFixed(2)}`;
             const diffCassa = last.fondoCassa - 300.00;
@@ -864,7 +872,7 @@
             tbody.innerHTML = '';
 
             if(closingsData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="p-6 text-center text-slate-500">Nessuna chiusura registrata online.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="13" class="p-6 text-center text-slate-500">Nessuna chiusura registrata online.</td></tr>`;
                 return;
             }
 
@@ -885,6 +893,7 @@
                     <td class="p-4 font-bold text-amber-300">€ ${item.scontrinoFiscale.toFixed(2)}</td>
                     <td class="p-4 font-bold text-white">€ ${item.incassoReale.toFixed(2)}</td>
                     <td class="p-4 text-blue-400">€ ${item.asporto.toFixed(2)}</td>
+                    <td class="p-4 text-slate-200">${item.asportoOrdini} pz</td>
                     <td class="p-4 text-slate-200">${spesaText}</td>
                     <td class="p-4">${spesaTipoBadge}</td>
                     <td class="p-4">€ ${item.fondoCassa.toFixed(2)}</td>
@@ -978,7 +987,7 @@
             document.getElementById('analisi-personale').innerText = `€ ${spesaPersonale.toFixed(2)}`;
             document.getElementById('analisi-ore-totali').innerText = `${oreTotaliPeriodo} ore totali`;
             document.getElementById('analisi-asporto').innerText = `€ ${totAsporto.toFixed(2)}`;
-            document.getElementById('analisi-asporto-ordini').innerText = `${totOrdiniAsporto} ordini totali`;
+            document.getElementById('analisi-asporto-ordini').innerText = `${totOrdiniAsporto} pezzi totali`;
 
             const diffEl = document.getElementById('analisi-diff-cassa');
             diffEl.innerText = `€ ${totDiffCassa.toFixed(2)}`;
@@ -1058,12 +1067,13 @@
 
             operatori.forEach(op => {
                 const opSerate = closingsData.filter(i => i.operatore === op);
-                let incassoTot = 0, copertiTot = 0, asportoTot = 0;
+                let incassoTot = 0, copertiTot = 0, asportoTot = 0, pezziTot = 0;
 
                 opSerate.forEach(s => {
                     incassoTot += s.incassoReale;
                     copertiTot += s.coperti;
                     asportoTot += s.asporto;
+                    pezziTot += s.asportoOrdini;
                 });
 
                 const mediaIncasso = opSerate.length > 0 ? (incassoTot / opSerate.length) : 0;
@@ -1095,8 +1105,8 @@
                             <span class="font-medium text-white">${mediaCoperti.toFixed(1)}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400">Totale Asporto Gestito:</span>
-                            <span class="font-medium text-blue-400">€ ${asportoTot.toFixed(2)}</span>
+                            <span class="text-slate-400">Asporto Gestito (€ / pz):</span>
+                            <span class="font-medium text-blue-400">€ ${asportoTot.toFixed(2)} (${pezziTot} pz)</span>
                         </div>
                     </div>
                 `;
@@ -1135,9 +1145,9 @@
 
         function exportCSV() {
             if(closingsData.length === 0) { alert('Nessun dato da esportare.'); return; }
-            let csv = 'Data,Operatore,ScontrinoFiscale,Salifou,Bancomat,IncassoGestionale,IncassoReale,Coperti,Asporto,OrdiniAsporto,SpeseDesc,SpeseTipo,SpeseImporto,FondoCassa,OreCucina,OreSala,OreAntonio,OrePietro\n';
+            let csv = 'Data,Operatore,ScontrinoFiscale,Salifou,Bancomat,IncassoGestionale,Coperti,AsportoEuros,PezziAsporto,IncassoReale,FondoCassa,OreCucina,OreSala,OreAntonio,OrePietro\n';
             closingsData.forEach(i => {
-                csv += `"${i.data}","${i.operatore}",${i.scontrinoFiscale},${i.salifou},${i.bancomat},${i.incassoGestionale},${i.incassoReale},${i.coperti},${i.asporto},${i.asportoOrdini},"${i.speseDesc || ''}","${i.speseTipo || 'Scontrino'}",${i.speseImporto || 0},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro}\n`;
+                csv += `"${i.data}","${i.operatore}",${i.scontrinoFiscale},${i.salifou},${i.bancomat},${i.incassoGestionale},${i.coperti},${i.asporto},${i.asportoOrdini},${i.incassoReale},${i.fondoCassa},${i.oreCucina},${i.oreSala},${i.oreAntonio},${i.orePietro}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
