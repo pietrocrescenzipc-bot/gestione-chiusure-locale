@@ -23,6 +23,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overflow-y: auto; }
+        .needle { transition: transform 0.8s cubic-bezier(0.4, 2.08, 0.55, 0.44); transform-origin: 100px 100px; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col md:flex-row">
@@ -55,6 +56,10 @@
                 <button onclick="switchTab('analisi')" id="nav-analisi" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
                     <i class="fa-solid fa-chart-line w-5 text-purple-400"></i>
                     <span>Analisi Mensile</span>
+                </button>
+                <button onclick="switchTab('parametri')" id="nav-parametri" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                    <i class="fa-solid fa-sliders w-5 text-cyan-400"></i>
+                    <span>Parametri & Costi</span>
                 </button>
                 <button onclick="switchTab('operatori')" id="nav-operatori" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
                     <i class="fa-solid fa-user-tie w-5 text-amber-400"></i>
@@ -107,6 +112,10 @@
                         <i class="fa-solid fa-chart-line w-5 text-purple-400"></i>
                         <span>Analisi Mensile</span>
                     </button>
+                    <button onclick="switchTab('parametri'); toggleMobileMenu();" id="drawer-nav-parametri" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
+                        <i class="fa-solid fa-sliders w-5 text-cyan-400"></i>
+                        <span>Parametri & Costi</span>
+                    </button>
                     <button onclick="switchTab('operatori'); toggleMobileMenu();" id="drawer-nav-operatori" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition text-left text-slate-400 hover:bg-slate-800/50 hover:text-white">
                         <i class="fa-solid fa-user-tie w-5 text-amber-400"></i>
                         <span>Report per Operatore</span>
@@ -158,33 +167,46 @@
                     </button>
                 </div>
 
-                <!-- BUSSOLA IN ALTO CON VALORI IN EVIDENZA -->
+                <!-- BUSSOLA TACHIMETRO CON AGO DINAMICO -->
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                     <div class="space-y-2">
                         <h3 class="font-bold text-white text-lg flex items-center space-x-2">
                             <i class="fa-solid fa-compass text-amber-400"></i>
-                            <span>Bussola & Punto di Pareggio</span>
+                            <span>Bussola & Soglia Margine / Profitto</span>
                         </h3>
-                        <p class="text-xs text-slate-400">Break-Even ultima serata: (Ore Totali × 18) × 3</p>
+                        <p class="text-xs text-slate-400">Soglia Regolarità ultima serata: (Ore Totali × Costo Orario Reale) × Moltiplicatore</p>
                         <div class="pt-2 flex flex-col space-y-1 text-xs">
                             <div class="flex justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
                                 <span class="text-slate-400">Incasso Reale Ultima Serata:</span>
                                 <span id="gauge-actual-val" class="font-bold text-white">€ 0,00</span>
                             </div>
                             <div class="flex justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                                <span class="text-slate-400">Punto di Pareggio (Target):</span>
+                                <span class="text-slate-400">Soglia Regolarità (Target):</span>
                                 <span id="gauge-target" class="font-bold text-amber-400">€ 0,00</span>
                             </div>
                         </div>
                     </div>
-                    <div class="text-center my-2">
-                        <div id="gauge-container" class="relative w-48 h-24 mx-auto overflow-hidden">
-                            <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+                    <div class="text-center my-2 flex justify-center">
+                        <!-- TACHIMETRO SVG CON AGO DINAMICO -->
+                        <div class="relative w-48 h-28 overflow-hidden">
+                            <svg viewBox="0 0 200 110" class="w-full h-full">
+                                <!-- Sfondo arco tachimetro -->
+                                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
+                                <!-- Zona Margine Ridotto (Rosso/Ambra) -->
+                                <path d="M 20 100 A 80 80 0 0 1 80 34" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round"/>
+                                <!-- Zona Profitto / Ottimale (Verde) -->
+                                <path d="M 80 34 A 80 80 0 0 1 180 100" fill="none" stroke="#34d399" stroke-width="16" stroke-linecap="round"/>
+                                <!-- Ago dinamico -->
+                                <g id="gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
+                                    <line x1="100" y1="100" x2="100" y2="35" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                                    <circle cx="100" cy="100" r="6" fill="#f59e0b"/>
+                                </g>
+                            </svg>
                         </div>
                     </div>
                     <div class="text-center md:text-left space-y-1">
                         <h4 id="gauge-status" class="text-xl font-bold text-white">In attesa di dati</h4>
-                        <p id="gauge-desc" class="text-xs text-slate-400">Inserisci la chiusura per valutare la performance della serata.</p>
+                        <p id="gauge-desc" class="text-xs text-slate-400">Inserisci la chiusura per valutare il margine della serata.</p>
                     </div>
                 </div>
 
@@ -319,7 +341,7 @@
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">8. Pezzi Asporto (Quantità)</label>
                                 <input type="number" id="chiusura-asporto-ordini" placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
                             </div>
-                            <!-- Incasso Reale (Fondo obbligatorio per i calcoli finanziari) -->
+                            <!-- Incasso Reale -->
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Incasso Reale Totale (€)</label>
                                 <input type="number" step="0.01" id="chiusura-incasso-reale" placeholder="0.00" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
@@ -471,7 +493,7 @@
                         <span class="text-xs text-slate-500 block mt-1">Media periodo</span>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl shadow-xl">
-                        <p class="text-xs font-medium text-slate-400">Spesa Totale Personale</p>
+                        <p class="text-xs font-medium text-slate-400">Costo Personale (Stimato)</p>
                         <h3 id="analisi-personale" class="text-2xl font-bold text-purple-400 mt-2">€ 0,00</h3>
                         <span id="analisi-ore-totali" class="text-xs text-slate-500 block mt-1">0 ore totali</span>
                     </div>
@@ -493,19 +515,16 @@
                         <div>
                             <h3 class="font-bold text-white text-lg flex items-center space-x-2">
                                 <i class="fa-solid fa-compass text-amber-400"></i>
-                                <span>Bussola Periodo</span>
+                                <span>Bussola Periodo (Margine)</span>
                             </h3>
-                            <p class="text-xs text-slate-400 mt-1">Media Incasso Reale vs Target Break-Even</p>
+                            <p class="text-xs text-slate-400 mt-1">Media Incasso Reale vs Soglia Regolarità</p>
                         </div>
                         <div class="my-6 text-center">
-                            <div class="relative w-48 h-24 mx-auto overflow-hidden">
-                                <div class="absolute w-48 h-48 rounded-full border-12 border-slate-800 border-t-amber-500 transition-all duration-500" id="analysis-gauge-circle" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
-                            </div>
                             <h4 id="analysis-gauge-status" class="text-xl font-bold text-white mt-4">In attesa</h4>
                             <p id="analysis-gauge-desc" class="text-xs text-slate-400 mt-1">Seleziona un periodo valido.</p>
                         </div>
                         <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between text-xs">
-                            <span class="text-slate-400">Media Target Periodo:</span>
+                            <span class="text-slate-400">Media Soglia Periodo:</span>
                             <span id="analysis-gauge-target" class="font-bold text-amber-400">€ 0,00</span>
                         </div>
                     </div>
@@ -543,6 +562,53 @@
                             <p class="text-xs text-slate-400">Ore Pietro</p>
                             <h4 id="ore-pietro-tot" class="text-xl font-bold text-white mt-1">0 h</h4>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4-BIS: PARAMETRI & COSTI DINAMICI -->
+            <section id="tab-parametri" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Configurazione Parametri Aziendali & Costi</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">Modifica in tempo reale i parametri di costo e le percentuali di margine per calcoli sempre affidabili.</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Costo Orario Lavoro Standard (€/h)</label>
+                            <input type="number" step="0.5" id="param-costo-orario" value="18" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Tariffa base oraria per il calcolo della soglia di regolarità.</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Moltiplicatore Soglia / Margine</label>
+                            <input type="number" step="0.1" id="param-moltiplicatore" value="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Coefficiente standard per la soglia ottimale di coperta costi.</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Stima % Food Cost / Materie Prime</label>
+                            <input type="number" step="1" id="param-food-cost" value="30" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Incidenza media stimata sul venduto.</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Fondo Cassa Target Standard (€)</label>
+                            <input type="number" step="1" id="param-fondo-cassa" value="300" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Fondo cassa standard di inizio/fine serata.</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">% Margine Operativo Obiettivo</label>
+                            <input type="number" step="1" id="param-margine-obiettivo" value="25" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-xs text-slate-500 mt-1 block">Target percentuale di utile operativo.</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4">
+                        <button type="button" onclick="saveParametri()" class="w-full sm:w-auto bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-cyan-600/20 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Salva Parametri Aziendali</span>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -594,6 +660,14 @@
         const db = firebase.database();
 
         let closingsData = [];
+        let globalParams = {
+            costoOrario: 18,
+            moltiplicatore: 3,
+            foodCostPct: 30,
+            fondoCassaTarget: 300,
+            margineObiettivo: 25
+        };
+
         let trendChartInstance = null;
         let analysisChartInstance = null;
 
@@ -603,6 +677,19 @@
             if(dataInput && !dataInput.value) {
                 dataInput.value = today;
             }
+        });
+
+        db.ref('pizzeria_params').on('value', snapshot => {
+            const p = snapshot.val();
+            if(p) {
+                globalParams = { ...globalParams, ...p };
+                document.getElementById('param-costo-orario').value = globalParams.costoOrario;
+                document.getElementById('param-moltiplicatore').value = globalParams.moltiplicatore;
+                document.getElementById('param-food-cost').value = globalParams.foodCostPct;
+                document.getElementById('param-fondo-cassa').value = globalParams.fondoCassaTarget;
+                document.getElementById('param-margine-obiettivo').value = globalParams.margineObiettivo;
+            }
+            refreshAllData();
         });
 
         db.ref('pizzeria_closings').on('value', snapshot => {
@@ -620,7 +707,7 @@
         });
 
         function switchTab(tabId) {
-            const tabs = ['dashboard', 'nuova', 'storico', 'analisi', 'operatori', 'ai'];
+            const tabs = ['dashboard', 'nuova', 'storico', 'analisi', 'parametri', 'operatori', 'ai'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const nav = document.getElementById(`nav-${t}`);
@@ -642,6 +729,7 @@
                 nuova: "Inserisci Chiusura",
                 storico: "Storico Chiusure",
                 analisi: "Analisi Mensile",
+                parametri: "Parametri & Costi",
                 operatori: "Report per Operatore",
                 ai: "Assistente AI"
             };
@@ -660,6 +748,21 @@
             if(drawer) drawer.classList.toggle('hidden');
         }
 
+        function saveParametri() {
+            const newP = {
+                costoOrario: parseFloat(document.getElementById('param-costo-orario').value) || 18,
+                moltiplicatore: parseFloat(document.getElementById('param-moltiplicatore').value) || 3,
+                foodCostPct: parseFloat(document.getElementById('param-food-cost').value) || 30,
+                fondoCassaTarget: parseFloat(document.getElementById('param-fondo-cassa').value) || 300,
+                margineObiettivo: parseFloat(document.getElementById('param-margine-obiettivo').value) || 25
+            };
+
+            db.ref('pizzeria_params').set(newP).then(() => {
+                alert('Parametri aziendali e costi aggiornati con successo nel cloud!');
+                refreshAllData();
+            });
+        }
+
         function saveClosing(e) {
             e.preventDefault();
             const editId = document.getElementById('edit-id').value;
@@ -672,10 +775,10 @@
                 bancomat: parseFloat(document.getElementById('chiusura-bancomat').value) || 0,
                 incassoGestionale: parseFloat(document.getElementById('chiusura-incasso-gestionale').value) || 0,
                 coperti: parseInt(document.getElementById('chiusura-coperti').value) || 0,
-                asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0, // Importo in €
-                asportoOrdini: parseInt(document.getElementById('chiusura-asporto-ordini').value) || 0, // Pezzi/Quantità
+                asporto: parseFloat(document.getElementById('chiusura-asporto').value) || 0,
+                asportoOrdini: parseInt(document.getElementById('chiusura-asporto-ordini').value) || 0,
                 incassoReale: parseFloat(document.getElementById('chiusura-incasso-reale').value) || 0,
-                fondoCassa: parseFloat(document.getElementById('chiusura-fondo-cassa').value) || 300,
+                fondoCassa: parseFloat(document.getElementById('chiusura-fondo-cassa').value) || globalParams.fondoCassaTarget,
                 oreCucina: parseFloat(document.getElementById('ore-cucina').value) || 0,
                 oreSala: parseFloat(document.getElementById('ore-sala').value) || 0,
                 oreAntonio: parseFloat(document.getElementById('ore-antonio').value) || 0,
@@ -741,7 +844,7 @@
             document.getElementById('btn-cancel-edit').classList.add('hidden');
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('chiusura-data').value = today;
-            document.getElementById('chiusura-fondo-cassa').value = "300.00";
+            document.getElementById('chiusura-fondo-cassa').value = globalParams.fondoCassaTarget.toFixed(2);
         }
 
         function refreshAllData() {
@@ -759,9 +862,10 @@
                 document.getElementById('dash-scontrino').innerText = '€ 0,00';
                 document.getElementById('dash-coperto-medio').innerText = '€ 0,00';
                 document.getElementById('dash-asporto').innerText = '€ 0,00';
-                document.getElementById('dash-fondo-cassa').innerText = '€ 300,00';
+                document.getElementById('dash-fondo-cassa').innerText = `€ ${globalParams.fondoCassaTarget.toFixed(2)}`;
                 document.getElementById('gauge-target').innerText = '€ 0,00';
                 document.getElementById('gauge-actual-val').innerText = '€ 0,00';
+                document.getElementById('gauge-needle').style.transform = `rotate(-90deg)`;
                 return;
             }
             const last = closingsData[0];
@@ -792,7 +896,7 @@
             document.getElementById('dash-asporto-ordini').innerText = `${last.asportoOrdini} pezzi effettuati`;
 
             document.getElementById('dash-fondo-cassa').innerText = `€ ${last.fondoCassa.toFixed(2)}`;
-            const diffCassa = last.fondoCassa - 300.00;
+            const diffCassa = last.fondoCassa - globalParams.fondoCassaTarget;
             const ammancoLabel = document.getElementById('dash-ammanco-label');
             if(diffCassa < 0) {
                 ammancoLabel.innerText = `Ammanco cassa: € ${Math.abs(diffCassa).toFixed(2)}`;
@@ -801,35 +905,40 @@
                 ammancoLabel.innerText = `Eccedenza cassa: +€ ${diffCassa.toFixed(2)}`;
                 ammancoLabel.className = "text-xs text-emerald-400 block mt-1 font-semibold";
             } else {
-                ammancoLabel.innerText = `Fondo cassa regolare (300.00€)`;
+                ammancoLabel.innerText = `Fondo cassa regolare (${globalParams.fondoCassaTarget.toFixed(2)}€)`;
                 ammancoLabel.className = "text-xs text-slate-500 block mt-1";
             }
 
             const oreTotali = last.oreCucina + last.oreSala + last.oreAntonio + last.orePietro;
-            const targetBreakEven = (oreTotali * 18) * 3;
+            const targetBreakEven = (oreTotali * globalParams.costoOrario) * globalParams.moltiplicatore;
             document.getElementById('gauge-target').innerText = `€ ${targetBreakEven.toFixed(2)}`;
             document.getElementById('gauge-actual-val').innerText = `€ ${last.incassoReale.toFixed(2)}`;
 
             const gaugeStatus = document.getElementById('gauge-status');
             const gaugeDesc = document.getElementById('gauge-desc');
-            const gaugeCircle = document.getElementById('gauge-circle');
+            const needle = document.getElementById('gauge-needle');
 
             if(targetBreakEven > 0) {
                 const ratio = last.incassoReale / targetBreakEven;
+                // Calcolo rotazione ago da -90deg (0%) a +90deg (200% o più del target)
+                let degrees = (ratio - 1) * 90; 
+                if(degrees < -90) degrees = -90;
+                if(degrees > 90) degrees = 90;
+                if(needle) needle.style.transform = `rotate(${degrees}deg)`;
+
                 if(ratio >= 1) {
-                    gaugeStatus.innerText = "Serata in Profitto! 🚀";
+                    gaugeStatus.innerText = "Serata in Profitto / Margine Ottimale 🚀";
                     gaugeStatus.className = "text-xl font-bold text-emerald-400";
-                    gaugeDesc.innerText = `Superato il punto di pareggio del ${((ratio - 1)*100).toFixed(1)}%.`;
-                    if(gaugeCircle) gaugeCircle.style.borderColor = "#34d399";
+                    gaugeDesc.innerText = `Superata la soglia di regolarità del ${((ratio - 1)*100).toFixed(1)}% (maggior margine).`;
                 } else {
-                    gaugeStatus.innerText = "Sotto il Pareggio ⚠️";
-                    gaugeStatus.className = "text-xl font-bold text-rose-400";
-                    gaugeDesc.innerText = `Mancano € ${(targetBreakEven - last.incassoReale).toFixed(2)} al break-even.`;
-                    if(gaugeCircle) gaugeCircle.style.borderColor = "#fb7185";
+                    gaugeStatus.innerText = "Margine Ridotto ⚠️";
+                    gaugeStatus.className = "text-xl font-bold text-amber-400";
+                    gaugeDesc.innerText = `Sotto la soglia standard di € ${(targetBreakEven - last.incassoReale).toFixed(2)} (minor margine).`;
                 }
             } else {
                 gaugeStatus.innerText = "Ore non registrate";
-                gaugeDesc.innerText = "Inserisci le ore del personale per calcolare il target.";
+                gaugeDesc.innerText = "Inserisci le ore del personale per calcolare la soglia.";
+                if(needle) needle.style.transform = `rotate(-90deg)`;
             }
 
             renderTrendChart();
@@ -877,7 +986,7 @@
             }
 
             closingsData.forEach((item) => {
-                const diffCassa = item.fondoCassa - 300.00;
+                const diffCassa = item.fondoCassa - globalParams.fondoCassaTarget;
                 let diffBadge = `<span class="text-slate-400">€ 0,00</span>`;
                 if(diffCassa < 0) diffBadge = `<span class="text-rose-400 font-semibold">-€ ${Math.abs(diffCassa).toFixed(2)}</span>`;
                 else if(diffCassa > 0) diffBadge = `<span class="text-emerald-400 font-semibold">+€ ${diffCassa.toFixed(2)}</span>`;
@@ -968,7 +1077,7 @@
                 totIncassi += item.incassoReale;
                 totAsporto += item.asporto;
                 totOrdiniAsporto += item.asportoOrdini;
-                totDiffCassa += (item.fondoCassa - 300.00);
+                totDiffCassa += (item.fondoCassa - globalParams.fondoCassaTarget);
                 oreCucina += item.oreCucina;
                 oreSala += item.oreSala;
                 oreAntonio += item.oreAntonio;
@@ -978,7 +1087,7 @@
             });
 
             const oreTotaliPeriodo = oreCucina + oreSala + oreAntonio + orePietro;
-            const spesaPersonale = oreTotaliPeriodo * 18;
+            const spesaPersonale = oreTotaliPeriodo * globalParams.costoOrario;
             const scontrinoMedioPeriodo = totCoperti > 0 ? (totIncassi / totCoperti) : 0;
 
             document.getElementById('analisi-incassi').innerText = `€ ${totIncassi.toFixed(2)}`;
@@ -998,26 +1107,23 @@
             document.getElementById('ore-antonio-tot').innerText = `${oreAntonio} h`;
             document.getElementById('ore-pietro-tot').innerText = `${orePietro} h`;
 
-            const avgTargetPeriodo = filtered.length > 0 ? ((totOrePeriodo * 18) * 3) / filtered.length : 0;
+            const avgTargetPeriodo = filtered.length > 0 ? ((totOrePeriodo * globalParams.costoOrario) * globalParams.moltiplicatore) / filtered.length : 0;
             const avgIncassoPeriodo = filtered.length > 0 ? totIncassi / filtered.length : 0;
-            document.getElementById('analysis-gauge-target').innerText = `€ ${avgTargetPeriodo.toFixed(2)} (media serata)`;
+            document.getElementById('analysis-gauge-target').innerText = `€ ${avgTargetPeriodo.toFixed(2)} (media soglia)`;
 
             const anStatus = document.getElementById('analysis-gauge-status');
             const anDesc = document.getElementById('analysis-gauge-desc');
-            const anCircle = document.getElementById('analysis-gauge-circle');
 
             if(filtered.length > 0 && avgTargetPeriodo > 0) {
                 const ratio = avgIncassoPeriodo / avgTargetPeriodo;
                 if(ratio >= 1) {
-                    anStatus.innerText = "Periodo in Profitto 🚀";
+                    anStatus.innerText = "Periodo in Profitto / Margine Ottimale 🚀";
                     anStatus.className = "text-xl font-bold text-emerald-400 mt-4";
-                    anDesc.innerText = `Media incassi superiore al target del ${((ratio - 1)*100).toFixed(1)}%.`;
-                    if(anCircle) anCircle.style.borderColor = "#34d399";
+                    anDesc.innerText = `Media incassi superiore alla soglia del ${((ratio - 1)*100).toFixed(1)}% (maggior margine).`;
                 } else {
-                    anStatus.innerText = "Sotto Media Target ⚠️";
-                    anStatus.className = "text-xl font-bold text-rose-400 mt-4";
-                    anDesc.innerText = `Media sotto il break-even di € ${(avgTargetPeriodo - avgIncassoPeriodo).toFixed(2)}.`;
-                    if(anCircle) anCircle.style.borderColor = "#fb7185";
+                    anStatus.innerText = "Margine Periodo Ridotto ⚠️";
+                    anStatus.className = "text-xl font-bold text-amber-400 mt-4";
+                    anDesc.innerText = `Media sotto la soglia di € ${(avgTargetPeriodo - avgIncassoPeriodo).toFixed(2)} (minor margine).`;
                 }
             } else {
                 anStatus.innerText = "Dati insufficienti";
@@ -1128,7 +1234,7 @@
                 totalIncassi += i.incassoReale;
                 totalCoperti += i.coperti;
                 totalAsporto += i.asporto;
-                if(i.fondoCassa < 300) ammoCount++;
+                if(i.fondoCassa < globalParams.fondoCassaTarget) ammoCount++;
             });
 
             const avgIncasso = totalIncassi / closingsData.length;
@@ -1137,9 +1243,9 @@
 
             contentBox.innerHTML = `
                 <p>💡 <strong>Panoramica Andamento:</strong> Nelle ultime <strong>${closingsData.length} serate</strong> monitorate a Marsciano, la pizzeria sta registrando un incasso medio di <strong>€ ${avgIncasso.toFixed(2)}</strong> per serata con una media di <strong>${avgCoperti.toFixed(0)} coperti</strong>.</p>
-                <p>🍕 <strong>Canale Asporto:</strong> L'asporto rappresenta il <strong>${asportoRatio}%</strong> del fatturato totale.</p>
-                <p>🔍 <strong>Controllo Cassa:</strong> Rilevati ${ammoCount} scostamenti dal fondo cassa target di 300.00€.</p>
-                <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Continuate a monitorare le ore del personale per mantenere il punto di pareggio ottimale!</p>
+                <p>🍕 <strong>Canale Asporto:</strong> L'asporto rappresenta il <strong>${asportoRatio}%</strong> del fatturato totale (con food cost stimato al ${globalParams.foodCostPct}%).</p>
+                <p>🔍 <strong>Controllo Cassa:</strong> Rilevati ${ammoCount} scostamenti dal fondo cassa target di ${globalParams.fondoCassaTarget.toFixed(2)}€.</p>
+                <p class="text-emerald-400 font-medium">✨ <em>Consiglio AI:</em> Continuate a monitorare l'andamento del margine per massimizzare il profitto operativo!</p>
             `;
         }
 
