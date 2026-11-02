@@ -167,15 +167,15 @@
                     </button>
                 </div>
 
-                <!-- BUSSOLA TACHIMETRO CON AGO DINAMICO & 4 PILASTRI -->
+                <!-- BUSSOLA TACHIMETRO STILE PIENISSIMO PRO & 4 PILASTRI -->
                 <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
                         <div class="space-y-2">
                             <h3 class="font-bold text-white text-lg flex items-center space-x-2">
                                 <i class="fa-solid fa-compass text-amber-400"></i>
-                               <span>Bussola & Soglia Margine / Profitto</span>
+                                <span>Bussola di Gestione & Margini</span>
                             </h3>
-                            <p class="text-xs text-slate-400">Soglia Regolarità ultima serata: (Ore Totali × Costo Orario Reale) × Moltiplicatore</p>
+                            <p class="text-xs text-slate-400">Monitoraggio istantaneo basato su Lavoro, Food Cost, Spese e Utile.</p>
                             <div class="pt-2 flex flex-col space-y-1 text-xs">
                                 <div class="flex justify-between bg-slate-900 p-2.5 rounded-xl border border-slate-800">
                                     <span class="text-slate-400">Incasso Reale Ultima Serata:</span>
@@ -187,22 +187,46 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="text-center my-2 flex justify-center">
-                            <div class="relative w-48 h-28 overflow-hidden">
-                                <svg viewBox="0 0 200 110" class="w-full h-full">
-                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
-                                    <path d="M 20 100 A 80 80 0 0 1 80 34" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round"/>
-                                    <path d="M 80 34 A 80 80 0 0 1 180 100" fill="none" stroke="#34d399" stroke-width="16" stroke-linecap="round"/>
+                        
+                        <!-- TACHIMETRO SVG A 4 SETTORI (LAVORO - FOOD COST - FISSI - MARGINE) -->
+                        <div class="text-center my-2 flex flex-col items-center justify-center">
+                            <div class="relative w-64 h-36 overflow-hidden">
+                                <svg viewBox="0 0 200 115" class="w-full h-full">
+                                    <!-- 4 Settori Colorati stile Pienissimo Pro -->
+                                    <!-- Settore 1: LAVORO (Rosso: da -90° a -45°) -->
+                                    <path d="M 20 100 A 80 80 0 0 1 55 45 L 100 100 Z" fill="#ef4444" opacity="0.85"/>
+                                    <!-- Settore 2: FOOD COST (Arancione: da -45° a 0°) -->
+                                    <path d="M 55 45 A 80 80 0 0 1 100 20 L 100 100 Z" fill="#f97316" opacity="0.85"/>
+                                    <!-- Settore 3: FISSI/SPESE (Giallo: da 0° a +45°) -->
+                                    <path d="M 100 20 A 80 80 0 0 1 145 45 L 100 100 Z" fill="#eab308" opacity="0.85"/>
+                                    <!-- Settore 4: MARGINE/PROFITTO (Verde: da +45° a +90°) -->
+                                    <path d="M 145 45 A 80 80 0 0 1 180 100 L 100 100 Z" fill="#22c55e" opacity="0.85"/>
+
+                                    <!-- Sfondo arco di chiusura -->
+                                    <path d="M 18 102 A 82 82 0 0 1 182 102" fill="none" stroke="#334155" stroke-width="3"/>
+
+                                    <!-- Etichette esterne macro-categorie -->
+                                    <text x="22" y="38" fill="#ef4444" font-size="9" font-weight="bold">LAVORO</text>
+                                    <text x="68" y="12" fill="#f97316" font-size="9" font-weight="bold">FOOD COST</text>
+                                    <text x="122" y="12" fill="#eab308" font-size="9" font-weight="bold">FISSI</text>
+                                    <text x="156" y="38" fill="#22c55e" font-size="9" font-weight="bold">MARGINE</text>
+
+                                    <!-- Ago Dinamico -->
                                     <g id="gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
-                                        <line x1="100" y1="100" x2="100" y2="35" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-                                        <circle cx="100" cy="100" r="6" fill="#f59e0b"/>
+                                        <line x1="100" y1="100" x2="100" y2="30" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+                                        <circle cx="100" cy="100" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="3"/>
                                     </g>
                                 </svg>
                             </div>
+                            <!-- Badge "IMMEDIATO" stile post -->
+                            <div class="bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-xs font-bold text-amber-400 shadow-md -mt-2">
+                                <i class="fa-solid fa-bolt text-amber-400"></i> CONTROLLO IN TEMPO REALE
+                            </div>
                         </div>
-                        <div class="text-center md:text-left space-y-1">
+
+                        <div class="text-center lg:text-left space-y-1">
                             <h4 id="gauge-status" class="text-xl font-bold text-white">In attesa di dati</h4>
-                            <p id="gauge-desc" class="text-xs text-slate-400">Inserisci la chiusura per valutare il margine della serata.</p>
+                            <p id="gauge-desc" class="text-xs text-slate-400">Inserisci la chiusura per valutare la posizione dell'ago sui margini.</p>
                         </div>
                     </div>
 
@@ -544,15 +568,21 @@
                                 <span id="analysis-gauge-target" class="font-bold text-amber-400">€ 0,00</span>
                             </div>
                         </div>
-                        <div class="my-2 text-center flex justify-center">
-                            <div class="relative w-48 h-28 overflow-hidden">
-                                <svg viewBox="0 0 200 110" class="w-full h-full">
-                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" stroke-width="16" stroke-linecap="round"/>
-                                    <path d="M 20 100 A 80 80 0 0 1 80 34" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round"/>
-                                    <path d="M 80 34 A 80 80 0 0 1 180 100" fill="none" stroke="#34d399" stroke-width="16" stroke-linecap="round"/>
+                        <div class="my-2 text-center flex flex-col items-center justify-center">
+                            <div class="relative w-64 h-36 overflow-hidden">
+                                <svg viewBox="0 0 200 115" class="w-full h-full">
+                                    <path d="M 20 100 A 80 80 0 0 1 55 45 L 100 100 Z" fill="#ef4444" opacity="0.85"/>
+                                    <path d="M 55 45 A 80 80 0 0 1 100 20 L 100 100 Z" fill="#f97316" opacity="0.85"/>
+                                    <path d="M 100 20 A 80 80 0 0 1 145 45 L 100 100 Z" fill="#eab308" opacity="0.85"/>
+                                    <path d="M 145 45 A 80 80 0 0 1 180 100 L 100 100 Z" fill="#22c55e" opacity="0.85"/>
+                                    <path d="M 18 102 A 82 82 0 0 1 182 102" fill="none" stroke="#334155" stroke-width="3"/>
+                                    <text x="22" y="38" fill="#ef4444" font-size="9" font-weight="bold">LAVORO</text>
+                                    <text x="68" y="12" fill="#f97316" font-size="9" font-weight="bold">FOOD COST</text>
+                                    <text x="122" y="12" fill="#eab308" font-size="9" font-weight="bold">FISSI</text>
+                                    <text x="156" y="38" fill="#22c55e" font-size="9" font-weight="bold">MARGINE</text>
                                     <g id="analysis-gauge-needle" class="needle" transform="rotate(-90, 100, 100)">
-                                        <line x1="100" y1="100" x2="100" y2="35" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-                                        <circle cx="100" cy="100" r="6" fill="#f59e0b"/>
+                                        <line x1="100" y1="100" x2="100" y2="30" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+                                        <circle cx="100" cy="100" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="3"/>
                                     </g>
                                 </svg>
                             </div>
@@ -1015,7 +1045,6 @@
                 if(needle) needle.style.transform = `rotate(-90deg)`;
             }
 
-            // AGGIORNAMENTO 4 PILASTRI BUSSOLA (DASHBOARD)
             document.getElementById('bussola-coperti-val').innerText = `${last.coperti} coperti`;
             document.getElementById('bussola-coperto-val').innerText = `€ ${last.copertoMedio.toFixed(2)}`;
             
@@ -1231,7 +1260,6 @@
                 if(anNeedle) anNeedle.style.transform = `rotate(-90deg)`;
             }
 
-            // AGGIORNAMENTO 4 PILASTRI BUSSOLA (ANALISI)
             document.getElementById('analysis-bussola-coperti-val').innerText = `${totCoperti} coperti`;
             
             const avgCopertoMedioPeriodo = filtered.length > 0 ? (filtered.reduce((acc, s) => acc + (s.copertoMedio || 0), 0) / filtered.length) : 0;
